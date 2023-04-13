@@ -1,53 +1,50 @@
-FROM php:7.2-apache
+FROM php:7.4-fpm
 
-# 1. Install development packages and clean up apt cache.
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/
+
+# Set working directory
+WORKDIR /var/www
+
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    curl \
-    g++ \
-    git \
-    libbz2-dev \
-    libfreetype6-dev \
-    libicu-dev \
-    libjpeg-dev \
-    libmcrypt-dev \
+    build-essential \
     libpng-dev \
-    libreadline-dev \
-    sudo \
-    unzip \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
     zip \
- && rm -rf /var/lib/apt/lists/*
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl \
+    libzip-dev
 
-# 2. Apache configs + document root.
-RUN echo "ServerName laravel-app.local" >> /etc/apache2/apache2.conf
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# Install extensions
+RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
+RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
+RUN docker-php-ext-install gd
 
-# 3. mod_rewrite for URL rewrite and mod_headers for .htaccess extra headers like Access-Control-Allow-Origin-
-RUN a2enmod rewrite headers
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# 4. Start with base PHP config, then add extensions.
-RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+# Add user for laravel application
+RUN groupadd -g 1000 www-data
+RUN useradd -u 1000 -ms /bin/bash -g www-data www-data
 
-RUN docker-php-ext-install \
-    bcmath \
-    bz2 \
-    calendar \
-    iconv \
-    intl \
-    mbstring \
-    opcache \
-    pdo_mysql \
-    zip
+# Copy existing application directory contents
+COPY . /var/www
 
-# 5. Composer.
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Copy existing application directory permissions
+COPY --chown=www-data:www-data . /var/www
 
-# 6. We need a user with the same UID/GID as the host user
-# so when we execute CLI commands, all the host file's permissions and ownership remain intact.
-# Otherwise commands from inside the container would create root-owned files and directories.
-#ARG uid
-RUN useradd -G www-data,root -u 1000 -d /home/devuser devuser
-RUN mkdir -p /home/devuser/.composer && \
-    chown -R devuser:devuser /home/devuser
+# Change current user to www
+USER www-data
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]
