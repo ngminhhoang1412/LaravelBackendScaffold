@@ -15,9 +15,11 @@ class CreateLinkTable extends Migration
     {
         Schema::create('link', function (Blueprint $table) {
             $table->id();
-            $table->integer('user');
+            $table->integer('creator_id');
+            $table->foreign('creator_id') -> references('id') -> on(\App\Models\Creator::retrieveTableName());
             $table->string('link');
-            $table->string('short_link');
+            $table->char('short_link', 7);
+            $table->integer('amount')->default(0);
             $table->timestamps();
         });
     }
