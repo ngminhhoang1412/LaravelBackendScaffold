@@ -11,7 +11,7 @@ services:
       - MYSQL_USER=u_tiny_be
       - MYSQL_PASSWORD=y7mt7yyGQGK9UWav
     volumes: 
-      - ./data_db:/var/lib/mysql
+      - /data/db/tiny-be:/var/lib/mysql
     command: '--default-authentication-plugin=mysql_native_password'
   tiny_be_web:
     depends_on:
@@ -29,7 +29,7 @@ services:
       - DB_PASSWORD=y7mt7yyGQGK9UWav
       - DB_DATABASE=tiny
     volumes:
-      - ./data_tiny_be:/var/www/html
+      - ./:/var/www/html
   tiny_be_nginx:
     depends_on:
       - tiny_be_web
