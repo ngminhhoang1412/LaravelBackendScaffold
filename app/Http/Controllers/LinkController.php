@@ -22,19 +22,26 @@ class LinkController extends Controller
             ->first();
         if ($link)
             return Helper::getResponse($link);
+        $data_row = new Link();
         DB::beginTransaction();
         try {
-            $this->model->link = $request->get('link');
-            $this->model->short_link = Str::random(7);
-            /** @var GlobalVariable $modelObj */
+            $data_row['link'] = $request->get('link');
+            do {
+                $short_link = Str::random(7);
+                $data = Link::query()
+                    ->where('short_link', '=', $short_link)
+                    ->first();
+            } while ($data);
+            $data_row['short_link'] = $short_link;
+            /** @var GlobalVariable $global */
             $global = app(GlobalVariable::class);
-            $this->model->user_id = $global->currentUser->id;
-            $this->model->save();
+            $data_row['user_id'] = $global->currentUser->id;
+            $data_row->save();
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
         }
-        return Helper::getResponse(Link::query()->find($this->model));
+        return Helper::getResponse($data_row);
     }
 
     public function handleUpdate(Request $request, $id): Response
@@ -44,7 +51,9 @@ class LinkController extends Controller
         DB::beginTransaction();
         try {
             if ($link) {
-                $model->link = $link;
+                $model['link'] = $link;
+                $model['short_link'] = Str::random(7);
+                $model->save();
             } else {
                 throw new Exception("Not recognizable");
             }
@@ -57,5 +66,12 @@ class LinkController extends Controller
                 ->where('id', '=', $id)
                 ->first()
         );
+    }
+
+    public function redirect($id)
+    {
+        $model = Link::find($id);
+        $link = $model -> link;
+        return redirect($link);
     }
 }

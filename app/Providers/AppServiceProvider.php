@@ -3,7 +3,6 @@
 namespace App\Providers;
 
 use App\Common\GlobalVariable;
-use App\Common\Portal;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,9 +19,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Portal::class, function () {
-            return new Portal();
-        });
         $this->app->singleton(GlobalVariable::class, function () {
             return new GlobalVariable();
         });
