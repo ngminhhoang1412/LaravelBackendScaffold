@@ -39,5 +39,5 @@ services:
     ports:
       - "8989:80"
     volumes:
-      - ./data_tiny_be:/var/www/html
+      - ./:/var/www/html
       - ./vhosts:/etc/nginx/conf.d
