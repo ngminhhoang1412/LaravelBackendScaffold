@@ -33,7 +33,10 @@ services:
   tiny_be_nginx:
     depends_on:
       - tiny_be_web
-    image: nginx:alpine
+#    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: ./Dockerfile.nginx
     container_name: tiny_be_nginx
     restart: unless-stopped
     ports:
