@@ -1,11 +1,10 @@
 <?php
 use App\Models\User;
-use App\Models\Creator;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class   CreateBase extends Migration
+class CreateBase extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +13,7 @@ class   CreateBase extends Migration
      */
     public function up()
     {
-        Schema::create('creator', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $roles = array_keys(User::ROLES);
             $table->increments('id')->unique();
             $table->string('email', 256)->nullable(false)->unique();
@@ -22,19 +21,9 @@ class   CreateBase extends Migration
             $table->string('password', 256)->nullable(false);
             $table->string('remember_token', 100)->nullable()->default(null);
             $table->enum('role', $roles)->nullable(false)
-                ->default($roles[3]);
+                ->default($roles[1]);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });
-    }
-
-    /**
-     * Reverse the migrations.
-     *
-     * @return void
-     */
-    public function down()
-    {
-        Schema::dropIfExists(Creator::retrieveTableName());
     }
 }

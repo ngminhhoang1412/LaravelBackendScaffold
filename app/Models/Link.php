@@ -10,6 +10,9 @@ class Link extends BaseModel
 {
     use HasFactory;
 
+    /**
+     * @var mixed
+     */
     protected $fillable = [
         'link',
         'short_link',

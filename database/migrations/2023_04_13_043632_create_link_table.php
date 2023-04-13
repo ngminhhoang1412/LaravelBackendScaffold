@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Link;
 
 class CreateLinkTable extends Migration
 {
@@ -13,10 +14,10 @@ class CreateLinkTable extends Migration
      */
     public function up()
     {
-        Schema::create('link', function (Blueprint $table) {
+        Schema::create(Link::retrieveTableName(), function (Blueprint $table) {
             $table->id();
-            $table->integer('creator_id');
-            $table->foreign('creator_id') -> references('id') -> on(\App\Models\Creator::retrieveTableName());
+            $table->unsignedInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->string('link');
             $table->char('short_link', 7);
             $table->integer('amount')->default(0);
@@ -31,6 +32,6 @@ class CreateLinkTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('link');
+        Schema::dropIfExists(Link::retrieveTableName());
     }
 }
