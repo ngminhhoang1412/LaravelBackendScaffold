@@ -20,6 +20,8 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+      args:
+        uid: ${UID}
     container_name: tiny_be_web
     restart: unless-stopped
     ports:
@@ -30,5 +32,7 @@ services:
       - DB_USERNAME=u_tiny_be
       - DB_PASSWORD=y7mt7yyGQGK9UWav
       - DB_DATABASE=tiny
+      - APACHE_RUN_USER=#1000
+      - APACHE_RUN_GROUP=#1000
     volumes:
       - ./:/var/www/html
