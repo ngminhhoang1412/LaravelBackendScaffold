@@ -23,10 +23,11 @@ services:
     container_name: tiny_be_web
     restart: unless-stopped
     environment:
-      - WORDPRESS_DB_HOST=tiny_be_db:3306
-      - WORDPRESS_DB_USER=u_tiny_be
-      - WORDPRESS_DB_PASSWORD=y7mt7yyGQGK9UWav
-      - WORDPRESS_DB_NAME=tiny
+      - DB_HOST=tiny_be_db
+      - DB_POST=3306
+      - DB_USERNAME=u_tiny_be
+      - DB_PASSWORD=y7mt7yyGQGK9UWav
+      - DB_DATABASE=tiny
     volumes:
       - ./data_tiny_be:/var/www/html
   tiny_be_nginx:
