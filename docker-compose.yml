@@ -29,7 +29,7 @@ services:
       - DB_PASSWORD=y7mt7yyGQGK9UWav
       - DB_DATABASE=tiny
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www
   tiny_be_nginx:
     depends_on:
       - tiny_be_web
@@ -39,5 +39,5 @@ services:
     ports:
       - "8989:80"
     volumes:
-      - ./:/var/www/html
+      - ./:/var/www
       - ./vhosts:/etc/nginx/conf.d
