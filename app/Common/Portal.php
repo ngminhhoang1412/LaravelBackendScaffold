@@ -15,7 +15,7 @@ class Portal
 
     function __construct()
     {
-        $this->endpoint = config('services.metaplus_portal.endpoint');
+        $this->endpoint = config('services.link.endpoint');
         $this->client = new Client();
         $this->login();
     }
