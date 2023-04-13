@@ -1,16 +1,10 @@
 <?php
 
-use App\Http\Controllers\MailController;
-use App\Http\Controllers\OrderTypeController;
-use App\Http\Controllers\SiteController;
 use App\Http\Controllers\LinkController;
 use App\Http\Middleware\AuthStore;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\OrderController;
-use App\Http\Controllers\WorkerController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ResourceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,7 +24,7 @@ Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::get('link', [LinkController::class, 'index']);
         Route::get('link/{id}', [LinkController::class, 'show']);
         Route::post('link', [LinkController::class, 'createLink']);
-        Route::put('link/{id}', [LinkController::class, 'update']);
+        Route::put('link/{id}', [LinkController::class, 'handleUpdate']);
         Route::delete('link/{id}', [LinkController::class, 'destroy']);
     });
 });

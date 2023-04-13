@@ -24,12 +24,11 @@ class LinkController extends Controller
             return Helper::getResponse($link);
         DB::beginTransaction();
         try {
-            $this->model -> link = $request->get('link');
-            $this->model -> short_link = Str::random(7);
-
+            $this->model->link = $request->get('link');
+            $this->model->short_link = Str::random(7);
             /** @var GlobalVariable $modelObj */
             $global = app(GlobalVariable::class);
-            $this->model -> user_id = $global->currentUser->id;
+            $this->model->user_id = $global->currentUser->id;
             $this->model->save();
             DB::commit();
         } catch (Exception $e) {
@@ -40,16 +39,12 @@ class LinkController extends Controller
 
     public function handleUpdate(Request $request, $id): Response
     {
-        $status = $request->get('status');
-        $amount = $request->get('amount');
+        $model = Link::find($id);
+        $link = $request->get('link');
         DB::beginTransaction();
         try {
-            if ($status) {
-                // Cancel order
-                $this->handleCancelOrder($id, $status);
-            } elseif ($amount) {
-                // Update remaining
-                $this->handleProgressUpdate($id, $amount);
+            if ($link) {
+                $model->link = $link;
             } else {
                 throw new Exception("Not recognizable");
             }
@@ -58,21 +53,9 @@ class LinkController extends Controller
             DB::rollBack();
         }
         return Helper::getResponse(
-            Order::query()
+            Link::query()
                 ->where('id', '=', $id)
-                ->orWhere('order_no', '=', $id)
                 ->first()
         );
-    }
-
-
-    public function handleStore(Request $request): Response
-    {
-        $modelObj = $this->modelObj;
-        $orderValidator = $modelObj->getOrderValidation($request->input('type'));
-        $callback = function ($request) use ($modelObj) {
-            return $modelObj->createOrder($request);
-        };
-        return $this->validateCustom($request, $orderValidator, $callback);
     }
 }
