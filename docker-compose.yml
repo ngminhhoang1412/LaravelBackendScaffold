@@ -22,6 +22,8 @@ services:
       dockerfile: ./Dockerfile
     container_name: tiny_be_web
     restart: unless-stopped
+    ports:
+      - "9000:9000"
     environment:
       - DB_HOST=tiny_be_db
       - DB_POST=3306
