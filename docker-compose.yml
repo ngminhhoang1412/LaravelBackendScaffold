@@ -22,6 +22,8 @@ services:
       dockerfile: ./Dockerfile
     container_name: tiny_be_web
     restart: unless-stopped
+    ports:
+      - 8989:80
     environment:
       - DB_HOST=tiny_be_db
       - DB_POST=3306
@@ -30,14 +32,3 @@ services:
       - DB_DATABASE=tiny
     volumes:
       - ./:/var/www/html
-  tiny_be_nginx:
-    depends_on:
-      - tiny_be_web
-    image: nginx:1.15.12-alpine
-    container_name: tiny_be_nginx
-    restart: unless-stopped
-    ports:
-      - "8989:80"
-    volumes:
-      - ./:/var/www/html
-      - ./vhosts:/etc/nginx/conf.d
