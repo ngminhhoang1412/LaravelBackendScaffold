@@ -18,6 +18,10 @@ class Link extends BaseModel
         'short_link',
     ];
 
+    protected $filters= [
+        'user_id',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

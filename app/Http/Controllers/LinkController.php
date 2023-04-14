@@ -68,9 +68,12 @@ class LinkController extends Controller
         );
     }
 
-    public function redirect($id)
+    public function redirect(Request $request)
     {
-        $model = Link::find($id);
+        $short_link = $request->shortlink;
+        $model = Link::query()
+            ->where('short_link', '=', $short_link)
+            ->first();
         $model -> amount++;
         $link = $model -> link;
         $model->save();
