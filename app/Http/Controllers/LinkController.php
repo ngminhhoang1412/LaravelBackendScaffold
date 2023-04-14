@@ -71,7 +71,9 @@ class LinkController extends Controller
     public function redirect($id)
     {
         $model = Link::find($id);
+        $model -> amount++;
         $link = $model -> link;
+        $model->save();
         return redirect($link);
     }
 }

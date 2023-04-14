@@ -74,7 +74,8 @@ class AuthController extends Controller
             $user = User::where('email', $request['email'])->first();
 
             return Helper::getResponse([
-                'token' => $this->getToken($user, $user->role)
+                'token' => $this->getToken($user, $user->role),
+                'name' => $user->name
             ]);
         } catch (\Throwable $th) {
             return Helper::getResponse(null, $th->getMessage());
