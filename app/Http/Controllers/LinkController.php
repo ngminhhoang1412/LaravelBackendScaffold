@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 
 class LinkController extends Controller
 {
@@ -21,7 +22,7 @@ class LinkController extends Controller
             ->where('link', '=', $request->get('link'))
             ->first();
         if ($link)
-            return Helper::getResponse($link);
+            return Helper::getResponse(null);
         $data_row = new Link();
         DB::beginTransaction();
         try {
@@ -79,4 +80,14 @@ class LinkController extends Controller
         $model->save();
         return redirect($link);
     }
+
+    public function getByUser(): Response
+    {
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        $model = Link::query()
+            ->where('user_id', '=', $global->currentUser->id)->orderBy( 'created_at', 'desc')->get();
+        return Helper::getResponse($model);
+    }
+
 }
