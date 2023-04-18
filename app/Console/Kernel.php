@@ -20,6 +20,6 @@ class Kernel extends ConsoleKernel
 
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(DailyTraffic::class)->everyMinute();
+        $schedule->command(DailyTraffic::class)->everyFiveMinutes();
     }
 }
