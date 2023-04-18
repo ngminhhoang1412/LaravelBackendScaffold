@@ -1,0 +1,6 @@
+FROM nginx:latest
+WORKDIR /var/www
+ADD ./vhosts/web.conf /etc/nginx/conf.d/web.conf
+ADD . /var/www
+RUN chown -R nginx:nginx /var/www
+EXPOSE 80

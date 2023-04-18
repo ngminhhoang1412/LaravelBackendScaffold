@@ -1,0 +1,17 @@
+name: cicd-tiny-url-be
+on: [push]
+jobs:
+
+  deploy-main:
+    if: github.ref == 'refs/heads/main'
+    runs-on: molilabs
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Deploy main'
+      run: |
+          rsync -av ./ /data/vhosts/TinyUrl-BE/.
+          cd /data/vhosts/TinyUrl-BE
+          chown -R www-data:www-data *
+          docker exec -i tiny_be_web php artisan key:generate
+          docker exec -i tiny_be_web php artisan cache:clear
+          docker exec -i tiny_be_web php artisan config:cache

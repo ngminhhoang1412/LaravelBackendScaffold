@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+  tiny_be_db:
+    image: mysql:5.7
+    container_name: tiny_be_db
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=tiny
+      - MYSQL_ROOT_PASSWORD=gYUrGzQZ8CuKGmFnbcZXHY
+      - MYSQL_USER=u_tiny_be
+      - MYSQL_PASSWORD=y7mt7yyGQGK9UWav
+    volumes: 
+      - /data/db/tiny-be:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+  tiny_be_web:
+    depends_on:
+      - tiny_be_db
+    #image: tiny_be-base:v2
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: tiny_be_web
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      - DB_HOST=tiny_be_db
+      - DB_POST=3306
+      - DB_USERNAME=u_tiny_be
+      - DB_PASSWORD=y7mt7yyGQGK9UWav
+      - DB_DATABASE=tiny
+    volumes:
+      - ./:/var/www
+  tiny_be_nginx:
+    depends_on:
+      - tiny_be_web
+#    image: nginx:alpine
+    build:
+      context: .
+      dockerfile: ./Dockerfile.nginx
+    container_name: tiny_be_nginx
+    restart: unless-stopped
+    ports:
+      - "8989:80"
+    volumes:
+      - ./:/var/www
+      - ./vhosts:/etc/nginx/conf.d
