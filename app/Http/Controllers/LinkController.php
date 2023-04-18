@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
 class LinkController extends Controller
 {
@@ -22,7 +21,9 @@ class LinkController extends Controller
             ->where('link', '=', $request->get('link'))
             ->first();
         if ($link)
-            return Helper::getResponse(null);
+            return response([
+                'error' => 'Link is available'
+            ], $status ?? 400);
         $data_row = new Link();
         DB::beginTransaction();
         try {
@@ -81,12 +82,13 @@ class LinkController extends Controller
         return redirect($link);
     }
 
-    public function getByUser(): Response
+    public function getByUser(Request $request): Response
     {
+        $limit = $request->has('limit') ? $request->get('limit') : 20;
         /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);
         $model = Link::query()
-            ->where('user_id', '=', $global->currentUser->id)->orderBy( 'created_at', 'desc')->get();
+            ->where('user_id', '=', $global->currentUser->id)->orderBy( 'created_at', 'desc')->paginate($limit);
         return Helper::getResponse($model);
     }
 

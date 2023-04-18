@@ -27,4 +27,3 @@ Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::delete('link/{id}', [LinkController::class, 'destroy']);
 });
 
-

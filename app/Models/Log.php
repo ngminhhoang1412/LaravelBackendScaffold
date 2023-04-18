@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 class Log extends BaseModel
 {
-    const LOG_CATEGORY_ENUM = ['PortalLog', 'WorkerLog', 'SeederLog', 'CronLog'];
+    use HasFactory;
 }
