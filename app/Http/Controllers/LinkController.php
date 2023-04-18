@@ -21,7 +21,9 @@ class LinkController extends Controller
             ->where('link', '=', $request->get('link'))
             ->first();
         if ($link)
-            return Helper::getResponse($link);
+            return response([
+                'error' => 'Link is available'
+            ], $status ?? 400);
         $data_row = new Link();
         DB::beginTransaction();
         try {
@@ -68,10 +70,26 @@ class LinkController extends Controller
         );
     }
 
-    public function redirect($id)
+    public function redirect(Request $request)
     {
-        $model = Link::find($id);
+        $short_link = $request->shortlink;
+        $model = Link::query()
+            ->where('short_link', '=', $short_link)
+            ->first();
+        $model -> amount++;
         $link = $model -> link;
+        $model->save();
         return redirect($link);
     }
+
+    public function getByUser(Request $request): Response
+    {
+        $limit = $request->has('limit') ? $request->get('limit') : 20;
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        $model = Link::query()
+            ->where('user_id', '=', $global->currentUser->id)->orderBy( 'created_at', 'desc')->paginate($limit);
+        return Helper::getResponse($model);
+    }
+
 }

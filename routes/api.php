@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\LinkController;
 use App\Http\Middleware\AuthStore;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -21,6 +20,7 @@ Route::post('auth/register', [AuthController::class, 'createUser']);
 Route::post('auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::get('link', [LinkController::class, 'index']);
+        Route::get('user/link', [LinkController::class, 'getByUser']);
         Route::get('link/{id}', [LinkController::class, 'show']);
         Route::post('link', [LinkController::class, 'createLink']);
         Route::put('link/{id}', [LinkController::class, 'handleUpdate']);
