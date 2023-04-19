@@ -19,7 +19,7 @@ class CreateLogsTable extends Migration
             $table->id();
             $table->date('date');
             $table->unsignedBigInteger('link_id');
-            $table->foreign('link_id')->references('id')->on('links');
+            $table->foreign('link_id')->references('id')->on(Link::retrieveTableName());
             $table->integer('amount')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();

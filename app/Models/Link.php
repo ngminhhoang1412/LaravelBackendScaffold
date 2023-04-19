@@ -27,13 +27,6 @@ class Link extends BaseModel
     ];
 
     /**
-     * @var string[]
-     */
-    protected $filters = [
-        'user_id',
-    ];
-
-    /**
      * @return BelongsTo
      */
     public function user(): BelongsTo
