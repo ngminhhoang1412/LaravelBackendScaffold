@@ -9,6 +9,9 @@ class Log extends BaseModel
 {
     use HasFactory;
 
+    /**
+     * @return BelongsTo
+     */
     public function link(): BelongsTo
     {
         return $this->belongsTo(Link::class);
