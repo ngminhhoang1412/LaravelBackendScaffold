@@ -78,7 +78,7 @@ class BaseModel extends Model
         }
         $model = $this->filterByRelation($model);
         return $model
-            ->simplePaginate($limit ?: BaseModel::CUSTOM_LIMIT)
+            ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
     }
 
