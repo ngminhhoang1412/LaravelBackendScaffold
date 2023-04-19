@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LinkController;
+use App\Http\Controllers\LogController;
 use App\Http\Middleware\AuthStore;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -23,5 +24,6 @@ Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::get('links/{id}', [LinkController::class, 'show']);
         Route::post('links', [LinkController::class, 'create']);
         Route::delete('links/{id}', [LinkController::class, 'destroy']);
+        Route::get('logs', [LogController::class, 'index']);
 });
 

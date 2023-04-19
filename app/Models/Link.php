@@ -94,6 +94,10 @@ class Link extends BaseModel
         return Helper::getResponse(Link::query()->find($newLink));
     }
 
+    /**
+     * @param $model
+     * @return mixed
+     */
     function filterByRelation($model){
         /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);
