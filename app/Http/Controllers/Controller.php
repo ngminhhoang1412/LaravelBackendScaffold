@@ -60,17 +60,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request): Response
-    {
-        return Helper::getResponse(null);
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param $id
@@ -98,7 +87,7 @@ class Controller extends BaseController
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request): Response
+    public function store(Request $request): Response
     {
         // TODO: missing permission check
         $modelValidator = call_user_func($this->model .'::getInsertValidator', $request);
