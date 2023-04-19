@@ -12,14 +12,14 @@ class CreateLinkTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create(Link::retrieveTableName(), function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users');
-            $table->string('link');
-            $table->char('short_link', 7);
+            $table->string('link', 2000);
+            $table->char('short_link', 7)->unique();
             $table->integer('amount')->default(0);
             $table->timestamps();
         });
@@ -30,7 +30,7 @@ class CreateLinkTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists(Link::retrieveTableName());
     }

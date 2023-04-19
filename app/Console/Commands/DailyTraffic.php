@@ -7,7 +7,6 @@ use App\Models\Log;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class DailyTraffic extends Command
 {
@@ -16,14 +15,14 @@ class DailyTraffic extends Command
      *
      * @var string
      */
-    protected $signature = 'link:amount';
+    protected $signature = 'link:takeAmount';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Log each amount traffic by date';
+    protected $description = 'Log traffic amount by date';
 
     /**
      * Create a new command instance.
@@ -48,11 +47,13 @@ class DailyTraffic extends Command
                 ->map(function($item) {
                     DB::table(Log::retrieveTableName())->Insert([
                         'date' => date('Y-m-d'),
-                        'link' => $item->link,
+                        'link_id' => $item->id,
                         'amount' => $item->amount,
                     ]);
+                    DB::table(Link::retrieveTableName())->update([
+                        'amount' => 0
+                    ]);
                 });
-            Link::query()->update(['amount' => 0]);
             DB::commit();
         } catch (Exception $e) {
             echo $e->getMessage();
