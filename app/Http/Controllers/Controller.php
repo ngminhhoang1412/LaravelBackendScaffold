@@ -117,10 +117,6 @@ class Controller extends BaseController
      */
     public function update(Request $request, $id): Response
     {
-        // TODO: should apply this record-permission-checking on other actions as well
-//        if (!$this->modelObj->checkPermission($id)) {
-//            return Helper::getResponse(null, 'Not allowed', 403);
-//        }
         $modelValidator = call_user_func($this->model .'::getUpdateValidator', $request, $id);
         $callback = function ($request) use ($id) {
             return $this->handleUpdate($request, $id);

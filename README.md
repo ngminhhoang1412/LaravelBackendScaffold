@@ -30,6 +30,11 @@ Setup database, then run
 ```console
 composer install
 php artisan migrate
+sudo chmod -R 755 <folder>
+chmod -R o+w <folder>/storage
+php artisan key:generate
+php artisan cache:clear 
+php artisan config:clear
 ```
 
 

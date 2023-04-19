@@ -46,6 +46,9 @@ class BaseModel extends Model
         $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
     }
 
+    /**
+     * @return mixed
+     */
     public static function retrieveTableName()
     {
         return with(new static)->getTable();
@@ -189,7 +192,7 @@ class BaseModel extends Model
      * This function get the user id that links to current Model's record,
      * which will determine if this user can access the requesting record or not
      */
-    function getUserId($id)
+    function getUserId()
     {
         return null;
     }
