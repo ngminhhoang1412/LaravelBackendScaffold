@@ -56,7 +56,11 @@ class LinkController extends Controller
             $model = Link::query()
                 ->where('short_link', '=', $request->shortlink)
                 ->first();
-            $model->amount++;
+            $amount = $model->amount;
+            Link::where('short_link', $request->shortlink)
+                ->update([
+                    'amount' => $amount + 1
+                ]);
             $link = $model->link;
             DB::commit();
             return redirect($link);
