@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Common\Helper;
 use App\Models\Link;
-use App\Models\User;
 use Exception;
 use App\Common\GlobalVariable;
 use Illuminate\Contracts\Foundation\Application;
@@ -25,13 +24,23 @@ class LinkController extends Controller
      */
     public function handleStore(Request $request): Response
     {
-        /** @var Link $modelObj */
-        $modelObj = $this->modelObj;
-        $linkValidator = $modelObj::getInsertValidator($request);
-        $callback = function ($request) use ($modelObj) {
-            return $modelObj->createLink($request);
-        };
-        return $this->validateCustom($request, $linkValidator, $callback);
+        DB::beginTransaction();
+        $newLinkId = null;
+        try {
+            $link = $request->get('link');
+            /** @var GlobalVariable $global */
+            $global = app(GlobalVariable::class);
+            $user_id = $global->currentUser->id;
+            $newLinkId = DB::table(Link::retrieveTableName())->insertGetId([
+                'link' => $link,
+                'short_link' => Str::random(7),
+                'user_id' => $user_id
+            ]);
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        return Helper::getResponse(Link::query()->find($newLinkId));
     }
 
 

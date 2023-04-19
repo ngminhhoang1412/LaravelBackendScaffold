@@ -59,39 +59,11 @@ class Link extends BaseModel
             [
                 'link' => [
                     'required',
-                    'unique:links,link'
+                    'unique:'.Link::retrieveTableName().',link'
                 ]
             ],
             parent::getInsertValidator($request)
         );
-    }
-
-    /**
-     * @param Request $request
-     * @return Response
-     */
-    public function createLink(Request $request): Response
-    {
-        DB::beginTransaction();
-        $newLink = null;
-        try {
-            $link = $request->get('link');
-            /** @var GlobalVariable $global */
-            $global = app(GlobalVariable::class);
-            $user_id = $global->currentUser->id;
-            $newlyAddedId = DB::table(Link::retrieveTableName())->insertGetId([
-                'link' => $link,
-                'short_link' => Str::random(7),
-                'user_id' => $user_id,
-                "created_at" => Carbon::now(),
-                "updated_at" => Carbon::now()
-            ]);
-            $newLink = $newlyAddedId;
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-        }
-        return Helper::getResponse(Link::query()->find($newLink));
     }
 
     /**
