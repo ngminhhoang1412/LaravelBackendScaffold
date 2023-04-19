@@ -26,6 +26,9 @@ class CreateBase extends Migration
         });
     }
 
+    /**
+     * @return void
+     */
     public function down(): void
     {
         Schema::dropIfExists('users');
