@@ -18,8 +18,8 @@ class CreateLogsTable extends Migration
         Schema::create(Log::retrieveTableName(), function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->unsignedInteger('link_id');
-            $table->foreign('link_id')->references('id')->on(Link::retrieveTableName());
+            $table->unsignedBigInteger('link_id');
+            $table->foreign('link_id')->references('id')->on('links');
             $table->integer('amount')->default(0);
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
