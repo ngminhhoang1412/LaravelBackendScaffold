@@ -9,8 +9,6 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "fruitcake/laravel-cors": "^2.0",
-        "google/apiclient": "2.12.1",
-        "google/apiclient-services": "^0.275.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.15",
@@ -53,9 +51,6 @@
         ]
     },
     "extra": {
-        "google/apiclient-services": [
-            "YouTube"
-        ],
         "laravel": {
             "dont-discover": []
         }
