@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\DailyTraffic;
+use App\Console\Commands\removeExpiredLink;
 use App\Models\Link;
 use App\Models\Log;
 use Illuminate\Console\Scheduling\Schedule;
@@ -21,5 +22,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command(DailyTraffic::class)->everyFiveMinutes();
+        $schedule->command(removeExpiredLink::class)->daily();
     }
 }

@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\GlobalVariable;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use App\Common\GlobalVariable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 /**
@@ -58,8 +59,10 @@ class BaseModel extends Model
      * @param Request $request
      * @return mixed|Paginator
      */
-    public function queryWithCustomFormat(Request $request)
+    public function queryWithCustomFormat(Request $request, $queryString = "*")
     {
+        DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+        $queryString = "link, SUM(amount) as total_amount";
         $limit = $request->get('limit');
         $relations = $request->{'relation'};
         $relationsCount = $request->{'relationCount'};
@@ -71,11 +74,13 @@ class BaseModel extends Model
         if ($relationsCount) {
             $model = $model->withCount($relationsCount);
         }
+        $model = $model->groupBy('link');
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
             $model = $model->select($this->getAliasArray());
         }
+        $model = $model->select(DB::raw($queryString));
         $model = $this->filterByRelation($model);
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
@@ -90,7 +95,7 @@ class BaseModel extends Model
     {
         $keys = array_keys($this::getInsertValidator($request));
         $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($request){
+            ->mapWithKeys(function ($item) use ($request) {
                 return [$item => $request[$item]];
             })->toArray();
         return $this::insert($params);
@@ -114,7 +119,6 @@ class BaseModel extends Model
                         $item = (int) $item;
                     }
                     $model->{$key} = $item;
-
                 }
                 $model->save();
             }

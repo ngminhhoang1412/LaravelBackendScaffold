@@ -26,6 +26,10 @@ class Link extends BaseModel
         'amount'
     ];
 
+    protected $filters = [
+        'between',
+        'user_id'
+    ];
     /**
      * @return BelongsTo
      */
@@ -52,7 +56,10 @@ class Link extends BaseModel
             [
                 'link' => [
                     'required',
-                    'unique:'.Link::retrieveTableName().',link'
+                    Rule::unique(Link::retrieveTableName(), 'link')
+                        ->where(function ($query) {
+                            return $query->where('user_id', auth()->user()->id);
+                        })
                 ]
             ],
             parent::getInsertValidator($request)

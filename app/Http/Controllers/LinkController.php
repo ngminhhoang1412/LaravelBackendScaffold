@@ -66,7 +66,7 @@ class LinkController extends Controller
             return redirect($link);
         } catch (Exception $e) {
             DB::rollBack();
-            return Helper::getResponse(null);
+            return response('',404);
         }
     }
 }
