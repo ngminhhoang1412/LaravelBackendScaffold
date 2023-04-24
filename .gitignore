@@ -6,9 +6,6 @@
 /storage/backup-resource
 /storage/logs
 /vendor
-.env
-.env.backup
-.phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
 Homestead.yaml
@@ -17,5 +14,6 @@ yarn-error.log
 /.idea
 /.vscode
 
+.*
 !/.gitignore
 !/public/.htaccess
