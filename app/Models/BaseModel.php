@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
 use Illuminate\Support\Facades\DB;
@@ -52,7 +53,7 @@ class BaseModel extends Model
     /**
      * @return mixed
      */
-    public static function retrieveTableName()
+    public static function retrieveTableName(): mixed
     {
         return with(new static)->getTable();
     }
@@ -94,7 +95,7 @@ class BaseModel extends Model
      * @param Request $request
      * @return mixed
      */
-    public function insertWithCustomFormat(Request $request)
+    public function insertWithCustomFormat(Request $request): mixed
     {
         $keys = array_keys($this::getInsertValidator($request));
         $params = collect($keys)
@@ -107,7 +108,7 @@ class BaseModel extends Model
     /**
      * @param Request $request
      * @param $id
-     * @return null
+     * @return Model|null
      */
     public function updateWithCustomFormat(Request $request, $id): ?Model
     {
@@ -141,9 +142,9 @@ class BaseModel extends Model
     }
 
     /**
-     * @return expression
+     * @return Expression
      */
-    public function getAliasString()
+    public function getAliasString(): Expression
     {
         $result = '*';
         foreach ($this->alias as $key => $value) {
@@ -193,13 +194,12 @@ class BaseModel extends Model
     }
 
     /**
-     * @param $id
      * @return mixed
      * By default, no permission should be granted to any record
      * This function get the user id that links to current Model's record,
      * which will determine if this user can access the requesting record or not
      */
-    function getUserId()
+    function getUserId(): mixed
     {
         return null;
     }

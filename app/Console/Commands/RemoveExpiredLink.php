@@ -37,9 +37,9 @@ class RemoveExpiredLink extends Command
     /**
      * Execute the console command.
      *
-     * @return int
+     * @return void
      */
-    public function handle()
+    public function handle(): void
     {
         DB::beginTransaction();
         try{
@@ -48,7 +48,7 @@ class RemoveExpiredLink extends Command
             DB::table(Link::retrieveTableName())
                             ->whereDate('created_at','<=',now()->subYear())
                             ->get('id')->map(function ($value) use (&$ids) {
-                                array_push($ids, $value->id);
+                                $ids[] = $value->id;
                             });
 
             // Delete all related log first
