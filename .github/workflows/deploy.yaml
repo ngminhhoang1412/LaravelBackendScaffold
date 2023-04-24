@@ -9,7 +9,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: 'Deploy main'
       run: |
-          rsync -av ./ /data/vhosts/TinyUrl-BE/.
+          rsync -av --exclude=.git ./ /data/vhosts/TinyUrl-BE/.
           cd /data/vhosts/TinyUrl-BE
           chown -R www-data:www-data /data/vhosts/TinyUrl-BE
           docker exec -i tiny_be_web composer install
