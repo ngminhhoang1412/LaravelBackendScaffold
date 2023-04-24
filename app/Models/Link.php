@@ -30,6 +30,14 @@ class Link extends BaseModel
         'between',
         'user_id'
     ];
+
+    protected $groupBy = [
+        'link'
+    ];
+
+    protected $alias = [
+        'SUM(amount)' => 'total_amount'
+    ];
     /**
      * @return BelongsTo
      */

@@ -29,6 +29,7 @@ class BaseModel extends Model
     protected $hidden = [];
     protected $alias = [];
     protected $updatable = [];
+    protected $groupBy = [];
     /**
      NOTE: $updatable should looks like this, either bool or anything else
      protected $updatable = [
@@ -44,6 +45,7 @@ class BaseModel extends Model
     {
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
+        $this->groupBy = array_merge($this->groupBy);
         $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
     }
 
@@ -59,12 +61,11 @@ class BaseModel extends Model
      * @param Request $request
      * @return mixed|Paginator
      */
-    public function queryWithCustomFormat(Request $request, $queryString = "*")
+    public function queryWithCustomFormat(Request $request)
     {
-        DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
-        $queryString = "link, SUM(amount) as total_amount";
         $limit = $request->get('limit');
         $relations = $request->{'relation'};
+        $groupBy = $this->groupBy;
         $relationsCount = $request->{'relationCount'};
         $request = $request->only($this->filters);
         $model = with(new static)::select();
@@ -74,13 +75,15 @@ class BaseModel extends Model
         if ($relationsCount) {
             $model = $model->withCount($relationsCount);
         }
-        $model = $model->groupBy('link');
+        if ($groupBy) {
+            DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+            $model = $model->groupBy($groupBy);
+        }
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
-            $model = $model->select($this->getAliasArray());
+            $model = $model->select($this->getAliasString());
         }
-        $model = $model->select(DB::raw($queryString));
         $model = $this->filterByRelation($model);
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
@@ -138,15 +141,15 @@ class BaseModel extends Model
     }
 
     /**
-     * @return array
+     * @return expression
      */
-    public function getAliasArray(): array
+    public function getAliasString()
     {
-        $result = ['*'];
+        $result = '*';
         foreach ($this->alias as $key => $value) {
-            $result[] = $key . ' as ' . $value;
+            $result = $result . ',' . $key . ' as ' . $value;
         }
-        return $result;
+        return DB::raw($result);
     }
 
     /**

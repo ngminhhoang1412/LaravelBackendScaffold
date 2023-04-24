@@ -41,20 +41,16 @@ class RemoveExpiredLink extends Command
      */
     public function handle()
     {
-        
         DB::beginTransaction();
         try{
-            // Get all expired link
-            $expiredLink = DB::table(Link::retrieveTableName())
-                            ->whereDate('created_at','<=',now()->subYear())
-                            ->get('id');
             $ids = array();
-            // Put it in an array 
-            // Because (DB::table->get() return an an array with objects has an id)
-            for ($i=0; $i < count($expiredLink); $i++) { 
-                array_push($ids, $expiredLink[$i]->id);
-            }
-            
+            // Get all expired link
+            DB::table(Link::retrieveTableName())
+                            ->whereDate('created_at','<=',now()->subYear())
+                            ->get('id')->map(function ($value) use (&$ids) {
+                                array_push($ids, $value->id);
+                            });
+
             // Delete all related log first
             DB::table(Log::retrieveTableName())
                 ->whereIn('link_id', $ids)
