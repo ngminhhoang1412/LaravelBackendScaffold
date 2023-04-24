@@ -11,6 +11,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
+use Mockery\Matcher\Any;
 
 /**
  * @method static select()
@@ -53,7 +54,7 @@ class BaseModel extends Model
     /**
      * @return mixed
      */
-    public static function retrieveTableName(): mixed
+    public static function retrieveTableName()
     {
         return with(new static)->getTable();
     }
