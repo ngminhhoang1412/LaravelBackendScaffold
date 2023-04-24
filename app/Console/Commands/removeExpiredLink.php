@@ -8,7 +8,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class removeExpiredLink extends Command
+class RemoveExpiredLink extends Command
 {
     /**
      * The name and signature of the console command.
@@ -57,7 +57,7 @@ class removeExpiredLink extends Command
             
             // Delete all related log first
             DB::table(Log::retrieveTableName())
-                ->whereIn('id', $ids)
+                ->whereIn('link_id', $ids)
                 ->delete();
             // Delete the expired link
             DB::table(Link::retrieveTableName())

@@ -55,11 +55,7 @@ class Link extends BaseModel
         return array_merge(
             [
                 'link' => [
-                    'required',
-                    Rule::unique(Link::retrieveTableName(), 'link')
-                        ->where(function ($query) {
-                            return $query->where('user_id', auth()->user()->id);
-                        })
+                    'required'
                 ]
             ],
             parent::getInsertValidator($request)

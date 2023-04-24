@@ -18,13 +18,11 @@ class UserSeeder extends Seeder
     {
         DB::table((new User)->getTable())
             ->insert([
-                'email' => 'admin@molinetwork.com',
-                'name' => 'admin',
-                'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', //password
+                'email' => env('ADMIN_EMAIL'),
+                'name' => env('ADMIN_USERNAME'),
+                'password' => env('ADMIN_PASSWORD'), //password
                 'remember_token' => null,
-                'role' => 'admin',
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now()
+                'role' => array_keys(User::ROLES)[0]
             ]);
     }
 }
