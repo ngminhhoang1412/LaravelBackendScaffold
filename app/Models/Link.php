@@ -35,6 +35,14 @@ class Link extends BaseModel
     }
 
     /**
+     * @return BelongsTo
+     */
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    /**
      * @return HasMany
      */
     public function log(): HasMany

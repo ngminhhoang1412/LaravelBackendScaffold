@@ -5,6 +5,7 @@ use App\Http\Controllers\LogController;
 use App\Http\Middleware\AuthStore;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,5 +23,6 @@ Route::post('auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::get('logs', [LogController::class, 'index']);
         Route::resource('links',LinkController::class);
+        Route::resource('groups',GroupController::class);
 });
 
