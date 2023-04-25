@@ -20,7 +20,7 @@ class UserSeeder extends Seeder
             ->insert([
                 'email' => env('ADMIN_EMAIL'),
                 'name' => env('ADMIN_USERNAME'),
-                'password' => Hash::make('password'),
+                'password' => Hash::make(env('ADMIN_PASSWORD')),
                 'remember_token' => null,
                 'role' => array_keys(User::ROLES)[0]
             ]);
