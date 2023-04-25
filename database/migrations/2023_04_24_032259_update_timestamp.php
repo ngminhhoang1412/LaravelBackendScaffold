@@ -21,7 +21,7 @@ class UpdateTimestamp extends Migration
             $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP')->change();
         });
 
-        Schema::table(Log::retrieveTableName(), function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->timestamp('created_at')->default('CURRENT_TIMESTAMP')->change();
             $table->timestamp('updated_at')->default('CURRENT_TIMESTAMP')->change();
         });
@@ -44,7 +44,7 @@ class UpdateTimestamp extends Migration
             $table->timestamp('updated_at')->default(null)->change();
         });
 
-        Schema::table(Log::retrieveTableName(), function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table) {
             $table->timestamp('created_at')->default(null)->change();
             $table->timestamp('updated_at')->default(null)->change();
         });
