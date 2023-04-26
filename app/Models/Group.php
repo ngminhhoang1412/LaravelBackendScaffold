@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
-use App\Common\GlobalVariable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
+use App\Common\GlobalVariable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Group extends BaseModel
 {
@@ -16,9 +17,9 @@ class Group extends BaseModel
     protected $updatable = [
         'description' => 'string'
     ];
-    public function links(): HasMany
+    public function links(): BelongsToMany
     {
-        return $this->hasMany(Link::class);
+        return $this->belongsToMany(Link::class);
     }
     public function user(): BelongsTo
     {
