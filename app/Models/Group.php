@@ -26,12 +26,9 @@ class Group extends BaseModel
     {
         return array_merge(
             [
-                'link_id' => [
-                    'required',
-                    'unique:' . Group::retrieveTableName() . ',link_id'
-                ],
                 'group_id' =>[
-                    'required'
+                    'required',
+                    'array'
                 ]
             ],
             parent::getInsertValidator($request)
