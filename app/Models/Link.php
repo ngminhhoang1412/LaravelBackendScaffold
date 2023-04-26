@@ -68,6 +68,24 @@ class Link extends BaseModel
     }
 
     /**
+     * @param Request $request
+     * @param string $id
+     * @return array
+     */
+    static function getUpdateValidator(Request $request, string $id): array
+    {
+        return array_merge(
+            [
+                'group' => [
+                    'required',
+                    'array'
+                ]
+            ],
+            parent::getUpdateValidator($request, $id)
+        );
+    }
+
+    /**
      * @param $model
      * @return mixed
      */

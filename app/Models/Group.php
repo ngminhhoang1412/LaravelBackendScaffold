@@ -13,6 +13,9 @@ class Group extends BaseModel
 {
     use HasFactory;
 
+    protected $updatable = [
+        'description' => 'string'
+    ];
     public function links(): HasMany
     {
         return $this->hasMany(Link::class);
@@ -22,18 +25,6 @@ class Group extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    static function getInsertValidator(Request $request): array
-    {
-        return array_merge(
-            [
-                'group_id' =>[
-                    'required',
-                    'array'
-                ]
-            ],
-            parent::getInsertValidator($request)
-        );
-    }
 
     function filterByRelation($model)
     {

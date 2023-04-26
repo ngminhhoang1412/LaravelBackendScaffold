@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Common\Helper;
-use App\Models\Link;
 use Exception;
-use App\Common\GlobalVariable;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Link;
+use App\Models\Group;
+use App\Common\Helper;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Common\GlobalVariable;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\Foundation\Application;
 
 class LinkController extends Controller
 {
@@ -43,7 +44,37 @@ class LinkController extends Controller
         return Helper::getResponse(Link::query()->find($newLinkId));
     }
 
+    public function handleUpdate(Request $request, $id): Response
+    {
+        DB::beginTransaction();
+        try {
+            $groups = $request->get('group');
+            /** @var GlobalVariable $global */
+            $global = app(GlobalVariable::class);
+            $user_id = $global->currentUser->id;
 
+            DB::table('group_link')->where('link_id', '=', $id)->delete();
+            DB::table(Group::retrieveTableName())
+                ->where('user_id','=', $user_id)
+                ->delete();
+            foreach ($groups as $key => $value) {
+                DB::table('group_link')->insert([
+                    'group_id' => $value,
+                    'link_id' => $id
+                ]);
+                DB::table(Group::retrieveTableName())->insert([
+                    'user_id' => $user_id,
+                    'description' => $value
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            DB::rollBack();
+        }
+        return Helper::getResponse(DB::table('group_link')->where('link_id', '=', $id)->get());
+    }
 
     /**
      * @param Request $request

@@ -17,11 +17,10 @@ class CreateGroupsTable extends Migration
     public function up()
     {
         Schema::create(Group::retrieveTableName(), function (Blueprint $table) {
-            $table->unsignedInteger('id');
+            $table->id();
             $table->unsignedInteger('user_id');
-            $table->longText('description')->nullable();
+            $table->string('description')->nullable(false);
             $table->foreign('user_id')->references('id')->on('users');
-            $table->primary('id');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });
