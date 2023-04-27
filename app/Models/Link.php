@@ -7,6 +7,7 @@ use App\Common\Helper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -47,6 +48,14 @@ class Link extends BaseModel
     }
 
     /**
+     * @return BelongsToMany
+     */
+    public function groups(): BelongsToMany
+    {
+        return $this->belongsToMany(Group::class);
+    }
+
+    /**
      * @return HasMany
      */
     public function log(): HasMany
@@ -67,6 +76,24 @@ class Link extends BaseModel
                 ]
             ],
             parent::getInsertValidator($request)
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @param string $id
+     * @return array
+     */
+    static function getUpdateValidator(Request $request, string $id): array
+    {
+        return array_merge(
+            [
+                'groups' => [
+                    'required',
+                    'array'
+                ]
+            ],
+            parent::getUpdateValidator($request, $id)
         );
     }
 

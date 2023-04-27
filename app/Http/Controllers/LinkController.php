@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Common\Helper;
-use App\Models\Link;
 use Exception;
-use App\Common\GlobalVariable;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Link;
+use App\Models\Group;
+use App\Common\Helper;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Common\GlobalVariable;
 use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Contracts\Foundation\Application;
 
 class LinkController extends Controller
 {
@@ -43,7 +44,26 @@ class LinkController extends Controller
         return Helper::getResponse(Link::query()->find($newLinkId));
     }
 
+    public function handleUpdate(Request $request, $id): Response
+    {
+        DB::beginTransaction();
+        try {
+            $groups = $request->get('groups');
 
+            DB::table('group_link')->where('link_id', '=', $id)->delete();
+            foreach ($groups as $key => $value) {
+                DB::table('group_link')->insert([
+                    'group_id' => $value,
+                    'link_id' => $id
+                ]);
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        return Helper::getResponse(Link::with('groups')->get());
+    }
 
     /**
      * @param Request $request
