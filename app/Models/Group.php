@@ -14,6 +14,10 @@ class Group extends BaseModel
 {
     use HasFactory;
 
+    const INTERMEDIATE_TABLE =[
+        'group_link'
+    ];
+
     protected $updatable = [
         'description' => 'string'
     ];

@@ -15,9 +15,9 @@ class GroupLink extends Migration
      */
     public function up()
     {
-        Schema::create('group_link', function (Blueprint $table) {
+        Schema::create(Group::INTERMEDIATE_TABLE[0], function (Blueprint $table) {
             $table->id();
-            $table->string('group_id')->nullable(false);
+            $table->unsignedInteger('group_id')->nullable(false);
             $table->unsignedInteger('link_id');
             $table->foreign('group_id')->references('id')->on(Group::retrieveTableName());
             $table->foreign('link_id')->references('id')->on(Link::retrieveTableName());
@@ -33,6 +33,6 @@ class GroupLink extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('group_link');
+        Schema::dropIfExists(Group::INTERMEDIATE_TABLE[0]);
     }
 }

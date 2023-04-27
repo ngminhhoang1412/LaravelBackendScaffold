@@ -49,31 +49,20 @@ class LinkController extends Controller
         DB::beginTransaction();
         try {
             $groups = $request->get('group');
-            /** @var GlobalVariable $global */
-            $global = app(GlobalVariable::class);
-            $user_id = $global->currentUser->id;
 
             DB::table('group_link')->where('link_id', '=', $id)->delete();
-            DB::table(Group::retrieveTableName())
-                ->where('user_id','=', $user_id)
-                ->delete();
             foreach ($groups as $key => $value) {
                 DB::table('group_link')->insert([
                     'group_id' => $value,
                     'link_id' => $id
                 ]);
-                DB::table(Group::retrieveTableName())->insert([
-                    'user_id' => $user_id,
-                    'description' => $value
-                ]);
             }
 
             DB::commit();
         } catch (\Exception $e) {
-            echo $e->getMessage();
             DB::rollBack();
         }
-        return Helper::getResponse(DB::table('group_link')->where('link_id', '=', $id)->get());
+        return Helper::getResponse(Link::with('groups')->get());
     }
 
     /**

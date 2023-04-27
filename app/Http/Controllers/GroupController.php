@@ -16,7 +16,6 @@ class GroupController extends Controller
 {
     public $model = Group::class;
 
-
     /**
      * @param Request $request
      * @param $id
@@ -31,8 +30,7 @@ class GroupController extends Controller
             $global = app(GlobalVariable::class);
             $user_id = $global->currentUser->id;
             DB::table(Group::retrieveTableName())
-                ->where('user_id', '=', $user_id)
-                ->where('description', '=', $id)
+                ->where('id', '=', $id)
                 ->update([
                     'description' => $description
                 ]);
@@ -43,7 +41,7 @@ class GroupController extends Controller
         }
         return Helper::getResponse(
             Group::query()
-                ->where('description', '=', $description)
+                ->where('id', '=', $id)
                 ->get()
         );
     }
