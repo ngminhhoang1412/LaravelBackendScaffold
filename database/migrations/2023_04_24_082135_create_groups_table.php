@@ -18,7 +18,7 @@ class CreateGroupsTable extends Migration
     {
         Schema::create(Group::retrieveTableName(), function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('user_id')->nullable(false);
             $table->string('description')->nullable(false);
             $table->foreign('user_id')->references('id')->on('users');
             $table->timestamp('created_at')->useCurrent();

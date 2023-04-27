@@ -18,7 +18,7 @@ class GroupLink extends Migration
         Schema::create(Group::INTERMEDIATE_TABLE[0], function (Blueprint $table) {
             $table->id();
             $table->unsignedInteger('group_id')->nullable(false);
-            $table->unsignedInteger('link_id');
+            $table->unsignedInteger('link_id')->nullable(false);
             $table->foreign('group_id')->references('id')->on(Group::retrieveTableName());
             $table->foreign('link_id')->references('id')->on(Link::retrieveTableName());
             $table->timestamp('created_at')->useCurrent();

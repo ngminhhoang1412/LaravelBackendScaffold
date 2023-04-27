@@ -26,9 +26,6 @@ class GroupController extends Controller
         $description = $request->get('description');
         DB::beginTransaction();
         try {
-            /** @var GlobalVariable $global */
-            $global = app(GlobalVariable::class);
-            $user_id = $global->currentUser->id;
             DB::table(Group::retrieveTableName())
                 ->where('id', '=', $id)
                 ->update([

@@ -48,7 +48,7 @@ class LinkController extends Controller
     {
         DB::beginTransaction();
         try {
-            $groups = $request->get('group');
+            $groups = $request->get('groups');
 
             DB::table('group_link')->where('link_id', '=', $id)->delete();
             foreach ($groups as $key => $value) {

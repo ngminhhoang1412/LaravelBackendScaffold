@@ -77,7 +77,7 @@ class Link extends BaseModel
     {
         return array_merge(
             [
-                'group' => [
+                'groups' => [
                     'required',
                     'array'
                 ]
