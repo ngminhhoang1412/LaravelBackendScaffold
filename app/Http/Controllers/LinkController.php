@@ -25,7 +25,6 @@ class LinkController extends Controller
      */
     public function handleStore(Request $request): Response
     {
-        DB::beginTransaction();
         $newLinkId = null;
         try {
             $link = $request->get('link');
@@ -37,13 +36,16 @@ class LinkController extends Controller
                 'short_link' => Str::random(7),
                 'user_id' => $user_id
             ]);
-            DB::commit();
         } catch (\Exception $e) {
-            DB::rollBack();
         }
         return Helper::getResponse(Link::query()->find($newLinkId));
     }
 
+    /**
+     * @param Request $request
+     * @param $id
+     * @return Response
+     */
     public function handleUpdate(Request $request, $id): Response
     {
         DB::beginTransaction();

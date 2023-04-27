@@ -18,6 +18,10 @@ class Group extends BaseModel
         'group_link'
     ];
 
+    protected $fillable = [
+        'description'
+    ];
+
     protected $updatable = [
         'description' => 'string'
     ];
@@ -30,6 +34,19 @@ class Group extends BaseModel
         return $this->belongsTo(User::class);
     }
 
+    static function getInsertValidator(Request $request): array
+    {
+        return array_merge(
+            [
+                'description' => [
+                    'required',
+                    'string'
+                ]
+            ],
+            parent::getInsertValidator($request)
+        );
+    }
+    
     /**
      * @param $model
      * @return mixed
