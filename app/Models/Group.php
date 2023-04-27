@@ -30,9 +30,13 @@ class Group extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-
+    /**
+     * @param $model
+     * @return mixed
+     */
     function filterByRelation($model)
     {
+        /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);
         $user_id = $global->currentUser->id;
         $user_role = $global->currentUser->role;

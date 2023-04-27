@@ -74,10 +74,10 @@ class LinkController extends Controller
         DB::beginTransaction();
         try {
             $model = Link::query()
-                ->where('short_link', '=', $request->shortlink)
+                ->where('short_link', '=', $request->{'short-link'})
                 ->first();
             $amount = $model->amount;
-            Link::where('short_link', $request->shortlink)
+            Link::where('short_link', $request->{'short-link'})
                 ->update([
                     'amount' => $amount + 1
                 ]);

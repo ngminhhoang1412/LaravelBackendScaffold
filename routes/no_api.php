@@ -3,4 +3,4 @@
 use App\Http\Controllers\LinkController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('{shortlink}', [LinkController::class, 'redirect']);
+Route::get('{short-link}', [LinkController::class, 'redirect']);
