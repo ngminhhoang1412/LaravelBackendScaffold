@@ -18,6 +18,10 @@ class Group extends BaseModel
         'group_link'
     ];
 
+    protected $fillable = [
+        'description'
+    ];
+
     protected $updatable = [
         'description' => 'string'
     ];

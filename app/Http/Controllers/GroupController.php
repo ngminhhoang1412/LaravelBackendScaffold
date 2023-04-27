@@ -16,30 +16,4 @@ class GroupController extends Controller
 {
     public $model = Group::class;
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return Response
-     */
-    public function handleUpdate(Request $request, $id): Response
-    {
-        $description = $request->get('description');
-        DB::beginTransaction();
-        try {
-            DB::table(Group::retrieveTableName())
-                ->where('id', '=', $id)
-                ->update([
-                    'description' => $description
-                ]);
-
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-        }
-        return Helper::getResponse(
-            Group::query()
-                ->where('id', '=', $id)
-                ->get()
-        );
-    }
 }
