@@ -34,7 +34,19 @@ class Group extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-
+    static function getInsertValidator(Request $request): array
+    {
+        return array_merge(
+            [
+                'description' => [
+                    'required',
+                    'string'
+                ]
+            ],
+            parent::getInsertValidator($request)
+        );
+    }
+    
     function filterByRelation($model)
     {
         $global = app(GlobalVariable::class);
