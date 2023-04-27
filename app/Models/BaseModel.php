@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
-use App\Common\GlobalVariable;
 use Exception;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
+use App\Common\GlobalVariable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
+use Mockery\Matcher\Any;
 
 /**
  * @method static select()
@@ -28,6 +31,7 @@ class BaseModel extends Model
     protected $hidden = [];
     protected $alias = [];
     protected $updatable = [];
+    protected $groupBy = [];
     /**
      NOTE: $updatable should looks like this, either bool or anything else
      protected $updatable = [
@@ -43,6 +47,7 @@ class BaseModel extends Model
     {
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
+        $this->groupBy = array_merge($this->groupBy);
         $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
     }
 
@@ -62,6 +67,7 @@ class BaseModel extends Model
     {
         $limit = $request->get('limit');
         $relations = $request->{'relation'};
+        $groupBy = $this->groupBy;
         $relationsCount = $request->{'relationCount'};
         $request = $request->only($this->filters);
         $model = with(new static)::select();
@@ -71,10 +77,14 @@ class BaseModel extends Model
         if ($relationsCount) {
             $model = $model->withCount($relationsCount);
         }
+        if ($groupBy) {
+            DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+            $model = $model->groupBy($groupBy);
+        }
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
-            $model = $model->select($this->getAliasArray());
+            $model = $model->select($this->getAliasString());
         }
         $model = $this->filterByRelation($model);
         return $model
@@ -86,11 +96,11 @@ class BaseModel extends Model
      * @param Request $request
      * @return mixed
      */
-    public function insertWithCustomFormat(Request $request)
+    public function insertWithCustomFormat(Request $request): mixed
     {
         $keys = array_keys($this::getInsertValidator($request));
         $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($request){
+            ->mapWithKeys(function ($item) use ($request) {
                 return [$item => $request[$item]];
             })->toArray();
         return $this::insert($params);
@@ -99,7 +109,7 @@ class BaseModel extends Model
     /**
      * @param Request $request
      * @param $id
-     * @return null
+     * @return Model|null
      */
     public function updateWithCustomFormat(Request $request, $id): ?Model
     {
@@ -114,7 +124,6 @@ class BaseModel extends Model
                         $item = (int) $item;
                     }
                     $model->{$key} = $item;
-
                 }
                 $model->save();
             }
@@ -134,15 +143,15 @@ class BaseModel extends Model
     }
 
     /**
-     * @return array
+     * @return Expression
      */
-    public function getAliasArray(): array
+    public function getAliasString(): Expression
     {
-        $result = ['*'];
+        $result = '*';
         foreach ($this->alias as $key => $value) {
-            $result[] = $key . ' as ' . $value;
+            $result = $result . ',' . $key . ' as ' . $value;
         }
-        return $result;
+        return DB::raw($result);
     }
 
     /**
@@ -186,13 +195,12 @@ class BaseModel extends Model
     }
 
     /**
-     * @param $id
      * @return mixed
      * By default, no permission should be granted to any record
      * This function get the user id that links to current Model's record,
      * which will determine if this user can access the requesting record or not
      */
-    function getUserId()
+    function getUserId(): mixed
     {
         return null;
     }

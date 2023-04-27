@@ -27,6 +27,18 @@ class Link extends BaseModel
         'amount'
     ];
 
+    protected $filters = [
+        'between',
+        'user_id'
+    ];
+
+    protected $groupBy = [
+        'link'
+    ];
+
+    protected $alias = [
+        'SUM(amount)' => 'total_amount'
+    ];
     /**
      * @return BelongsTo
      */
@@ -60,8 +72,7 @@ class Link extends BaseModel
         return array_merge(
             [
                 'link' => [
-                    'required',
-                    'unique:'.Link::retrieveTableName().',link'
+                    'required'
                 ]
             ],
             parent::getInsertValidator($request)
