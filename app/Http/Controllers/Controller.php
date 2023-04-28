@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Common\Helper;
 use App\Models\BaseModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 class Controller extends BaseController
 {
