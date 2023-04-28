@@ -44,6 +44,7 @@ class User extends Authenticatable
     ];
 
 
+    // Here you can list all ability that related to your business
     const ABILITIES = [
         'read',
         'create',
@@ -51,6 +52,7 @@ class User extends Authenticatable
         'delete'
     ];
 
+    // Then bind it to the roles
     const ROLES = [
         'admin' => self::ABILITIES,
         'creator' => [
