@@ -13,7 +13,7 @@ class BaseModel extends Model
     use HasFactory;
     use FilterQueryString;
 
-    const PER_PAGE = 10;
+    const CUSTOM_LIMIT = 10;
 
     protected $filters = [];
     protected $fillable = [];
@@ -59,7 +59,7 @@ class BaseModel extends Model
         }
         $model = $this->filterByRelation($model);
         return $model
-            ->simplePaginate($limit ?: BaseModel::PER_PAGE)
+            ->simplePaginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
     }
 

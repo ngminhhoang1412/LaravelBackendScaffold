@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Common\Helper;
+use App\Models\BaseModel;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Database\Eloquent\Builder;
@@ -18,6 +19,7 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public $model;
+    /** @var BaseModel $modelObj */
     public $modelObj;
 
     public function __construct()
