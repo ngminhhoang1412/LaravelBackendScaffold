@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
@@ -22,11 +23,13 @@ class BaseModel extends Model
     protected $updatable = [];
     public $queryBy = 'id';
     public $showingRelations = [];
+    protected $groupBy = [];
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
+        $this->groupBy = array_merge($this->groupBy);
         $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
     }
 
@@ -44,6 +47,7 @@ class BaseModel extends Model
         $limit = $request->get('limit');
         $relations = $request->{'relation'};
         $relationsCount = $request->{'relationCount'};
+        $groupBy = $this->groupBy;
         $request = $request->only($this->filters);
         $model = with(new static)::select();
         if ($relations) {
@@ -52,10 +56,14 @@ class BaseModel extends Model
         if ($relationsCount) {
             $model = $model->withCount($relationsCount);
         }
+        if ($groupBy) {
+            DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
+            $model = $model->groupBy($groupBy);
+        }
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
-            $model = $model->select($this->getAliasArray());
+            $model = $model->select($this->getAliasString());
         }
         $model = $this->filterByRelation($model);
         return $model
@@ -114,15 +122,15 @@ class BaseModel extends Model
     }
 
     /**
-     * @return array
+     * @return \Illuminate\Database\Query\Expression
      */
-    public function getAliasArray(): array
+    public function getAliasString()
     {
-        $result = ['*'];
+        $result = '*';
         foreach ($this->alias as $key => $value) {
-            $result[] = $key . ' as ' . $value;
+            $result = $result . ',' . $key . ' as ' . $value;
         }
-        return $result;
+        return DB::raw($result);
     }
 
     /**
