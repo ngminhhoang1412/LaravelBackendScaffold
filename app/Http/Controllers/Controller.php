@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Common\Helper;
 use App\Models\BaseModel;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -72,17 +73,6 @@ class Controller extends BaseController
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param $id
-     * @return Response
-     */
-    public function edit($id): Response
-    {
-        return Helper::getResponse(null, $id);
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param $id
@@ -135,8 +125,12 @@ class Controller extends BaseController
      */
     public function handleIndex(Request $request): Response
     {
-        $result = $this->modelObj->queryWithCustomFormat($request);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->queryWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -145,8 +139,12 @@ class Controller extends BaseController
      */
     public function handleStore(Request $request): Response
     {
-        $result = $this->modelObj->insertWithCustomFormat($request);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->insertWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -156,8 +154,12 @@ class Controller extends BaseController
      */
     public function handleUpdate(Request $request, $id): Response
     {
-        $result = $this->modelObj->updateWithCustomFormat($request, $id);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->updateWithCustomFormat($request, $id);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -166,8 +168,12 @@ class Controller extends BaseController
      */
     public function handleDestroy($id): Response
     {
-        $result = $this->modelObj->destroyWithCustomFormat($id);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->destroyWithCustomFormat($id);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
