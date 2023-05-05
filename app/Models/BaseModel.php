@@ -2,12 +2,19 @@
 
 namespace App\Models;
 
+use App\Common\GlobalVariable;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
+/**
+ * @method static insert(array $params)
+ * @method static create(array $array)
+ * @method static where(string $string, mixed $email)
+ */
 class BaseModel extends Model
 {
     use HasFactory;
@@ -189,7 +196,7 @@ class BaseModel extends Model
             if ($userId) {
                 /** @var GlobalVariable $global */
                 $global = app(GlobalVariable::class);
-                $result = $userId == $global->currentUser->id;
+                $result = $userId == $global->currentUser->{'id'};
             }
         } catch (Exception $e) {
         }
