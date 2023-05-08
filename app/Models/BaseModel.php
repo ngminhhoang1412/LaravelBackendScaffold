@@ -11,7 +11,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
-use Mockery\Matcher\Any;
 
 /**
  * @method static select()
@@ -96,14 +95,19 @@ class BaseModel extends Model
      * @param Request $request
      * @return mixed
      */
-    public function insertWithCustomFormat(Request $request): mixed
+    public function insertWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getInsertValidator($request));
+        $additionalFillable = $this->getAdditionalFillable();
+        $keys = array_merge($keys, array_keys($additionalFillable));
+        $insertArray = array_merge($request->toArray(), $additionalFillable);
         $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($request) {
-                return [$item => $request[$item]];
+            ->mapWithKeys(function ($item) use ($insertArray) {
+                return [$item => $insertArray[$item]];
             })->toArray();
-        return $this::insert($params);
+        $id = $this::query()
+            ->insertGetId($params);
+        return $this->find($id);
     }
 
     /**
@@ -111,7 +115,7 @@ class BaseModel extends Model
      * @param $id
      * @return Model|null
      */
-    public function updateWithCustomFormat(Request $request, $id): ?Model
+    public function updateWithCustomFormat(Request $request, $id)
     {
         try {
             /** @var Model $model */
@@ -222,5 +226,13 @@ class BaseModel extends Model
         } catch (Exception $e) {
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAdditionalFillable()
+    {
+        return [];
     }
 }

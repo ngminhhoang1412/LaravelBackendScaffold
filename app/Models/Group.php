@@ -25,15 +25,27 @@ class Group extends BaseModel
     protected $updatable = [
         'description' => 'string'
     ];
+
+    /**
+     * @return BelongsToMany
+     */
     public function links(): BelongsToMany
     {
         return $this->belongsToMany(Link::class);
     }
+
+    /**
+     * @return BelongsTo
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    /**
+     * @param Request $request
+     * @return array
+     */
     static function getInsertValidator(Request $request): array
     {
         return array_merge(
@@ -60,5 +72,17 @@ class Group extends BaseModel
         if ($user_role === array_keys(User::ROLES)[0])
             return $model;
         return $model->where('user_id', $user_id);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAdditionalFillable()
+    {
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        return [
+            'user_id' => $global->currentUser->id
+        ];
     }
 }

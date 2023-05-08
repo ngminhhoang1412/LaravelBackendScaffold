@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Common\Helper;
 use App\Models\BaseModel;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -129,8 +130,12 @@ class Controller extends BaseController
      */
     public function handleStore(Request $request): Response
     {
-        $result = $this->modelObj->insertWithCustomFormat($request);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->insertWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
