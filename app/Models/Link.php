@@ -73,6 +73,9 @@ class Link extends BaseModel
             [
                 'link' => [
                     'required'
+                ],
+                'name' => [
+                    'string'
                 ]
             ],
             parent::getInsertValidator($request)
@@ -88,9 +91,11 @@ class Link extends BaseModel
     {
         return array_merge(
             [
-                'groups' => [
-                    'required',
-                    'array'
+                'link' => [
+                    'required'
+                ],
+                'name' => [
+                    'string'
                 ]
             ],
             parent::getUpdateValidator($request, $id)
@@ -110,5 +115,18 @@ class Link extends BaseModel
         if ($user_role === array_keys(User::ROLES)[0])
             return $model;
         return $model->where('user_id', $user_id);
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAdditionalInsert(){
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        $user_id = $global->currentUser->id;
+        return [
+            'short_link' => Str::random(7),
+            'user_id' => $user_id
+        ];
     }
 }

@@ -21,50 +21,38 @@ class LinkController extends Controller
 
     /**
      * @param Request $request
-     * @return Response
-     */
-    public function handleStore(Request $request): Response
-    {
-        $newLinkId = null;
-        try {
-            $link = $request->get('link');
-            /** @var GlobalVariable $global */
-            $global = app(GlobalVariable::class);
-            $user_id = $global->currentUser->id;
-            $newLinkId = DB::table(Link::retrieveTableName())->insertGetId([
-                'link' => $link,
-                'short_link' => Str::random(7),
-                'user_id' => $user_id
-            ]);
-        } catch (\Exception $e) {
-        }
-        return Helper::getResponse(Link::query()->find($newLinkId));
-    }
-
-    /**
-     * @param Request $request
      * @param $id
      * @return Response
      */
-    public function handleUpdate(Request $request, $id): Response
+    public function updateLinkGroup(Request $request, $id): Response
     {
-        DB::beginTransaction();
-        try {
+        $callback = function ($request) use ($id) {
             $groups = $request->get('groups');
+            DB::beginTransaction();
+            try {
+                DB::table('group_link')->where('link_id', '=', $id)->delete();
+                foreach ($groups as $key => $value) {
+                    DB::table('group_link')->insert([
+                        'group_id' => $value,
+                        'link_id' => $id
+                    ]);
+                }
 
-            DB::table('group_link')->where('link_id', '=', $id)->delete();
-            foreach ($groups as $key => $value) {
-                DB::table('group_link')->insert([
-                    'group_id' => $value,
-                    'link_id' => $id
-                ]);
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
             }
+            return Helper::getResponse(Link::with('groups')->get());
 
-            DB::commit();
-        } catch (\Exception $e) {
-            DB::rollBack();
-        }
-        return Helper::getResponse(Link::with('groups')->get());
+        };
+        $validator = [
+            'groups' => [
+                'required',
+                'array'
+            ]
+        ];
+        return $this->validateCustom($request, $validator, $callback);
+
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
 use Illuminate\Database\Eloquent\Model;
@@ -9,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Validation\Rule;
 
 class Group extends BaseModel
 {
@@ -77,7 +79,7 @@ class Group extends BaseModel
     /**
      * @return array
      */
-    protected function getAdditionalFillable()
+    protected function getAdditionalUpdate()
     {
         /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);

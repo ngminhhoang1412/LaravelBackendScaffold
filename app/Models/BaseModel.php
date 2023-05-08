@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
@@ -86,6 +87,14 @@ class BaseModel extends Model
             $model = $model->select($this->getAliasString());
         }
         $model = $this->filterByRelation($model);
+        $customFilterByRelation = $this->getCustomFilterByRelation();
+        if ($customFilterByRelation) {
+            $model = $model->whereHas($customFilterByRelation['relation'], function (Builder $query)
+            use ($customFilterByRelation) {
+                $query->where($customFilterByRelation['condition']);
+            });
+        }
+
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
@@ -98,7 +107,7 @@ class BaseModel extends Model
     public function insertWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getInsertValidator($request));
-        $additionalFillable = $this->getAdditionalFillable();
+        $additionalFillable = $this->getAdditionalUpdate();
         $keys = array_merge($keys, array_keys($additionalFillable));
         $insertArray = array_merge($request->toArray(), $additionalFillable);
         $params = collect($keys)
@@ -231,8 +240,24 @@ class BaseModel extends Model
     /**
      * @return array
      */
-    protected function getAdditionalFillable()
+    protected function getAdditionalUpdate()
     {
+        return [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAdditionalInsert()
+    {
+        return [];
+    }
+
+
+    /**
+     * @return array
+     */
+    protected function getCustomFilterByRelation(){
         return [];
     }
 }
