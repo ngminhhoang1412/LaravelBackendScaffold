@@ -68,18 +68,18 @@ class LinkController extends Controller
     }
 
     /**
-     * @param $shortLink
+     * @param $shortId
      * @return Application|RedirectResponse|Redirector
      */
-        public function redirect($shortLink)
+        public function redirect($shortId)
     {
         DB::beginTransaction();
         try {
             $model = Link::query()
-                ->where('short_link', '=', $shortLink)
+                ->where('short_link', '=', $shortId)
                 ->first();
             $amount = $model->amount;
-            Link::where('short_link', $shortLink)
+            Link::where('short_link', $shortId)
                 ->update([
                     'amount' => $amount + 1
                 ]);
