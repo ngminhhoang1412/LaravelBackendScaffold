@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
+use App\Models\User;
+use Closure;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 class AuthStore
 {

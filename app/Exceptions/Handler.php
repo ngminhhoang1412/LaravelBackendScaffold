@@ -2,12 +2,12 @@
 
 namespace App\Exceptions;
 
-use Throwable;
 use App\Common\Helper;
-use Illuminate\Http\Response;
-use Illuminate\Http\JsonResponse;
-use Laravel\Sanctum\Exceptions\MissingAbilityException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Laravel\Sanctum\Exceptions\MissingAbilityException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -46,7 +46,7 @@ class Handler extends ExceptionHandler
     /**
      * @param $request
      * @param Throwable $e
-     * @return JsonResponse|\Illuminate\Http\Response|Response
+     * @return JsonResponse|Response
      * @throws Throwable
      */
     public function render($request, Throwable $e)

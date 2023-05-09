@@ -1,15 +1,11 @@
 <?php
 
 
-use App\Http\Controllers\PostController;
 use App\Http\Middleware\AuthStore;
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
-use App\Models\Permission;
-use App\Models\Role;
 
 /*
 |--------------------------------------------------------------------------

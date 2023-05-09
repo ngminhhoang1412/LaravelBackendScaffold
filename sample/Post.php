@@ -1,15 +1,10 @@
 <?php
 
-namespace App\Models;
 
-use App\Models\BaseModel;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
 
-class Post extends BaseModel
+class Post extends \App\Models\BaseModel
 {
 
     protected $fillable = [
@@ -29,10 +24,10 @@ class Post extends BaseModel
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(\App\Models\User::class);
     }
 
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return array_merge(
             [
@@ -40,7 +35,7 @@ class Post extends BaseModel
                     'required'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
     }
 
@@ -53,7 +48,14 @@ class Post extends BaseModel
                     'string'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
+    }
+
+    function getAdditionalStoreFields(): array
+    {
+        return [
+            'user_id' => 1
+        ];
     }
 }
