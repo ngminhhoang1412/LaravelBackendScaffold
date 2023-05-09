@@ -2,16 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Traits\HasPermissions;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    use HasRoles;
+    use HasPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -42,34 +44,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    const ABILITIES = [];
 
-
-    // Here you can list all ability that related to your business
-    const ABILITIES = [
-        'read',
-        'create',
-        'update',
-        'delete'
-    ];
-
-    // Then bind it to the roles
     const ROLES = [
-        'admin' => self::ABILITIES,
-        'creator' => [
-            self::ABILITIES[0],
-            self::ABILITIES[1],
-            self::ABILITIES[2]
-        ],
-        'guest' => [
-            self::ABILITIES[0]
-        ]
+        'admin' => [],
+        'leader' => [],
+        'accountant' => [],
+        'hr' => [],
+        'finance' => [],
+        'guest' => []
     ];
-
-    /**
-     * @return HasMany
-     */
-    public function posts() : HasMany
-    {
-        return $this->hasMany(Post::class);
-    }
 }

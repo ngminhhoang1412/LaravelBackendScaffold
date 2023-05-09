@@ -20,7 +20,11 @@ class CreatePersonalAccessTokensTable extends Migration
             $table->string('token', 64)->unique();
             $table->text('abilities')->nullable();
             $table->timestamp('last_used_at')->nullable();
-            $table->timestamps();
+            $table->string('created_by')->nullable();
+            $table->string('updated_by')->nullable();
+            $table->boolean('is_active')->default(true);
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent();
         });
     }
 
