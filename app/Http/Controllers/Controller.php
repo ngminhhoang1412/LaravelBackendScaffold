@@ -55,7 +55,7 @@ class Controller extends BaseController
             ->with($this->modelObj->showingRelations)
             ->where($this->modelObj->queryBy, $id)
             ->orWhere('id', $id)
-            ->select($this->modelObj->getAliasArray())
+            ->select($this->modelObj->getAliasString())
             ->first();
         return Helper::getResponse($result);
     }
