@@ -1,4 +1,4 @@
-facebook
-website
-tiktok
-youtube
+facebook:description:link_image
+website:description:link_image
+tiktok:description:link_image
+youtube:description:link_image
