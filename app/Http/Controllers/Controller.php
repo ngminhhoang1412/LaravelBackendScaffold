@@ -80,12 +80,12 @@ class Controller extends BaseController
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request): Response
+    public function store(Request $request): Response
     {
         // TODO: missing permission check
-        $modelValidator = call_user_func($this->model . '::getInsertValidator', $request);
+        $modelValidator = call_user_func($this->model . '::getStoreValidator', $request);
         $callback = function ($request) {
-            return $this->handleCreate($request);
+            return $this->handleStore($request);
         };
         return $this->validateCustom($request, $modelValidator, $callback);
     }
@@ -128,10 +128,10 @@ class Controller extends BaseController
      * @param Request $request
      * @return Response
      */
-    public function handleCreate(Request $request): Response
+    public function handleStore(Request $request): Response
     {
         try {
-            $result = $this->modelObj->insertWithCustomFormat($request);
+            $result = $this->modelObj->storeWithCustomFormat($request);
             return Helper::getResponse($result);
         } catch (Exception $e) {
             return Helper::handleApiError($e);

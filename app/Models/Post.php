@@ -28,7 +28,7 @@ class Post extends BaseModel
         return $this->belongsTo(User::class);
     }
 
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return array_merge(
             [
@@ -36,7 +36,7 @@ class Post extends BaseModel
                     'required'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
     }
 
@@ -49,11 +49,11 @@ class Post extends BaseModel
                     'string'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
     }
 
-    function getAdditionalCreateFields(): array
+    function getAdditionalStoreFields(): array
     {
         return [
             'user_id' => 1

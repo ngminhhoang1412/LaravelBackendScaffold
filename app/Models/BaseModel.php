@@ -84,10 +84,10 @@ class BaseModel extends Model
      * @param Request $request
      * @return Builder|Builder[]|Collection|Model|null
      */
-    public function insertWithCustomFormat(Request $request)
+    public function storeWithCustomFormat(Request $request)
     {
-        $keys = array_keys($this::getInsertValidator($request));
-        $additionalFields = $this->getAdditionalCreateFields();
+        $keys = array_keys($this::getStoreValidator($request));
+        $additionalFields = $this->getAdditionalStoreFields();
         $keys = array_merge($keys, array_keys($additionalFields));
         $insertArray = array_merge($request->toArray(), $additionalFields);
         $params = collect($keys)
@@ -163,7 +163,7 @@ class BaseModel extends Model
      * @param Request $request
      * @return array
      */
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return [];
     }
@@ -220,7 +220,7 @@ class BaseModel extends Model
     /**
      * @return array
      */
-    protected function getAdditionalCreateFields(): array
+    protected function getAdditionalStoreFields(): array
     {
         return [];
     }
