@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Common\Helper;
 use App\Models\User;
+use App\Common\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -22,6 +23,7 @@ class AuthController extends Controller
      */
     public function createUser(Request $request): Response
     {
+        $tableNames = config('permission.table_names');
         try {
             $validateUser = Validator::make(
                 $request->all(),
@@ -41,6 +43,14 @@ class AuthController extends Controller
                 'email' => $request['email'],
                 'password' => Hash::make($request['password'])
             ]);
+
+            $newUser = DB::table('users')->where('email','=', $request['email'])->get();
+            DB::table($tableNames['model_has_roles'])
+                ->insert([
+                    'role_id' => '6',
+                    'model_type' => 'App\Models\User',
+                    'model_id' => $newUser[0]->id
+                ]);
 
             return Helper::getResponse([
                 'token' => $this->getToken($user, 'guest')

@@ -14,10 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            PermissionSeeder::class,
             UserSeeder::class,
-            PostSeeder::class,
             PlatformSeeder::class,
             TeamSeeder::class,
+            RoleSeeder::class,
         ]);
         // Delete resource files after seeding
         $resourceFolder = storage_path("/resource");

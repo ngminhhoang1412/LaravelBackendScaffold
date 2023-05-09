@@ -20,6 +20,10 @@ class Post extends BaseModel
         'description' => 'string'
     ];
 
+    protected $groupBy = [
+        'user_id'
+    ];
+
     /**
      * @return BelongsTo
      */
