@@ -76,6 +76,7 @@ class BaseModel extends Model
      */
     public function insertWithCustomFormat(Request $request)
     {
+        // TODO: need reformat here
         $keys = array_keys($this::getInsertValidator($request));
         $additionalFields = $this->getInsertFields();
         $keys = array_merge($keys, array_keys($additionalFields));
