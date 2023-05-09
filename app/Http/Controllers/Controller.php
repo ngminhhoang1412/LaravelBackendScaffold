@@ -28,6 +28,9 @@ class Controller extends BaseController
         $this->modelObj = new $this->model;
     }
 
+    // TODO: missing route GET - /users/create - users.create
+    // TODO: missing route GET - /users/{user}/edit - users.edit
+
     /**
      * Display a listing of the resource.
      *

@@ -33,6 +33,7 @@ class Helper
      */
     public static function handleApiError(Exception $e) {
         if (env('APP') != Constant::PRODUCTION_FLAG) {
+            # TODO: use https://github.com/spatie/laravel-ignition
             return self::getResponse(null, $e->getMessage() . $e->getTraceAsString());
         } else {
             return self::getResponse(null);
