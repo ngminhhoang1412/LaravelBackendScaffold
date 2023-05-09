@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +20,7 @@ class UserSeeder extends Seeder
         ->insert([
             'email' => env('ADMIN_EMAIL'),
             'name' => env('ADMIN_NAME'),
-            'password' => Hash::make(env('ADMIN_PASSWORD')), 
+            'password' => Hash::make(env('ADMIN_PASSWORD')),
             'remember_token' => null,
             'role' => array_keys(User::ROLES)[0]
         ]);
