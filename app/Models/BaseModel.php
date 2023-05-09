@@ -77,9 +77,12 @@ class BaseModel extends Model
     public function insertWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getInsertValidator($request));
+        $additionalFields = $this->getInsertFields();
+        $keys = array_merge($keys, array_keys($additionalFields));
+        $insertArray = array_merge($request->toArray(), $additionalFields);
         $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($request) {
-                return [$item => $request[$item]];
+            ->mapWithKeys(function ($item) use ($insertArray) {
+                return [$item => $insertArray[$item]];
             })->toArray();
         return $this::insert($params);
     }
@@ -201,5 +204,13 @@ class BaseModel extends Model
         } catch (Exception $e) {
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getInsertFields(): array
+    {
+        return [];
     }
 }
