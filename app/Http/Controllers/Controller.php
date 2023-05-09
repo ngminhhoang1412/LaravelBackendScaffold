@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use App\Common\Helper;
 use App\Models\BaseModel;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class Controller extends BaseController
 {
@@ -35,7 +35,7 @@ class Controller extends BaseController
      */
     public function index(Request $request): Response
     {
-        $modelValidator = call_user_func($this->model .'::getQueryValidator');
+        $modelValidator = call_user_func($this->model . '::getQueryValidator');
         $callback = function ($request) {
             return $this->handleIndex($request);
         };
@@ -55,7 +55,7 @@ class Controller extends BaseController
             ->with($this->modelObj->showingRelations)
             ->where($this->modelObj->queryBy, $id)
             ->orWhere('id', $id)
-            ->select($this->modelObj->getAliasArray())
+            ->select($this->modelObj->getAliasString())
             ->first();
         return Helper::getResponse($result);
     }
@@ -107,7 +107,11 @@ class Controller extends BaseController
      */
     public function update(Request $request, $id): Response
     {
-        $modelValidator = call_user_func($this->model .'::getUpdateValidator', $request, $id);
+        // TODO: should apply this record-permission-checking on other actions as well
+        //        if (!$this->modelObj->checkPermission($id)) {
+        //            return Helper::getResponse(null, 'Not allowed', 403);
+        //        }
+        $modelValidator = call_user_func($this->model . '::getUpdateValidator', $request, $id);
         $callback = function ($request) use ($id) {
             return $this->handleUpdate($request, $id);
         };
@@ -164,7 +168,7 @@ class Controller extends BaseController
      */
     private function currentQuery(): Builder
     {
-        return call_user_func($this->model .'::query');
+        return call_user_func($this->model . '::query');
     }
 
     /**

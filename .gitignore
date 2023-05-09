@@ -1,19 +1,30 @@
-/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/storage/resource
-/storage/backup-resource
-/storage/logs
-/vendor
-docker-compose.override.yml
-Homestead.json
-Homestead.yaml
+/vendor/
+node_modules/
 npm-debug.log
 yarn-error.log
-/.idea
-/.vscode
 
+# Laravel 4 specific
+bootstrap/compiled.php
+app/storage/
+
+# Laravel 5 & Lumen specific
+public/storage
+public/hot
+
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
+
+storage/*.key
+storage/resource
+storage/backup-resource
+storage/logs
+Homestead.yaml
+Homestead.json
+docker-compose.override.yml
+
+
+# Everyfile with .
 .*
 !/.gitignore
 !/public/.htaccess
