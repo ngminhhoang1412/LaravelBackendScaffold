@@ -3,8 +3,8 @@
 namespace App\Providers;
 
 use App\Common\GlobalVariable;
-use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
