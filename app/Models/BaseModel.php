@@ -4,10 +4,13 @@ namespace App\Models;
 
 use App\Common\GlobalVariable;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\DB;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 /**
@@ -72,20 +75,20 @@ class BaseModel extends Model
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return Builder|Builder[]|Collection|Model|null
      */
     public function insertWithCustomFormat(Request $request)
     {
-        // TODO: need reformat here
         $keys = array_keys($this::getInsertValidator($request));
-        $additionalFields = $this->getInsertFields();
+        $additionalFields = $this->getAdditionalCreateFields();
         $keys = array_merge($keys, array_keys($additionalFields));
         $insertArray = array_merge($request->toArray(), $additionalFields);
         $params = collect($keys)
             ->mapWithKeys(function ($item) use ($insertArray) {
                 return [$item => $insertArray[$item]];
             })->toArray();
-        return $this::insert($params);
+        $id = self::query()->insertGetId($params);
+        return $this::query()->find($id);
     }
 
     /**
@@ -210,7 +213,7 @@ class BaseModel extends Model
     /**
      * @return array
      */
-    protected function getInsertFields(): array
+    protected function getAdditionalCreateFields(): array
     {
         return [];
     }

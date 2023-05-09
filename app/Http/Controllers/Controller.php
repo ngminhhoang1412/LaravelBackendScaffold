@@ -14,6 +14,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use PHPUnit\TextUI\Help;
 
 class Controller extends BaseController
 {
@@ -27,9 +28,6 @@ class Controller extends BaseController
     {
         $this->modelObj = new $this->model;
     }
-
-    // TODO: missing route GET - /users/create - users.create
-    // TODO: missing route GET - /users/{user}/edit - users.edit
 
     /**
      * Display a listing of the resource.
@@ -64,16 +62,6 @@ class Controller extends BaseController
         return Helper::getResponse($result);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request): Response
-    {
-        return Helper::getResponse(null);
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -97,7 +85,7 @@ class Controller extends BaseController
         // TODO: missing permission check
         $modelValidator = call_user_func($this->model . '::getInsertValidator', $request);
         $callback = function ($request) {
-            return $this->handleStore($request);
+            return $this->handleCreate($request);
         };
         return $this->validateCustom($request, $modelValidator, $callback);
     }
@@ -140,7 +128,7 @@ class Controller extends BaseController
      * @param Request $request
      * @return Response
      */
-    public function handleStore(Request $request): Response
+    public function handleCreate(Request $request): Response
     {
         try {
             $result = $this->modelObj->insertWithCustomFormat($request);
@@ -200,9 +188,10 @@ class Controller extends BaseController
             $validator->validate();
             return $callback($input);
         } catch (ValidationException $e) {
-            return response([
-                'error' => $validator->errors()->first()
-            ], 400);
+            return Helper::getResponse(
+                null,
+                $validator->errors()->first()
+            );
         }
     }
 }

@@ -48,4 +48,11 @@ class Post extends BaseModel
             parent::getInsertValidator($request)
         );
     }
+
+    function getAdditionalCreateFields(): array
+    {
+        return [
+            'user_id' => 1
+        ];
+    }
 }
