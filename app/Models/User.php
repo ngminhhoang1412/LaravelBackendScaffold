@@ -49,14 +49,30 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-    const ABILITIES = [];
+    const ABILITIES = [
+        "admin",
+        "creator",
+        "leader",
+        "insight",
+        "hr",
+        "finance",
+        "user-manage"
+    ];
 
     const ROLES = [
-        'admin' => [],
-        'leader' => [],
-        'accountant' => [],
-        'hr' => [],
-        'finance' => [],
-        'guest' => []
+        "admin" => [
+            self::ABILITIES[0],
+            self::ABILITIES[1],
+            self::ABILITIES[2],
+            self::ABILITIES[3],
+            self::ABILITIES[4],
+            self::ABILITIES[5],
+            self::ABILITIES[6],
+        ],
+        "leader" => [],
+        "accountant" => [],
+        "hr" => [],
+        "finance" => [],
+        "guest" => []
     ];
 }

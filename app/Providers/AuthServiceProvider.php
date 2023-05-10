@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Common\GlobalVariable;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Spatie\Permission\Traits\HasPermissions;
@@ -34,7 +35,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('assignRoleToUser', function ($user) use ($global) {
             $user = $global->currentUser;
             // The user need to HAVE THE ROLE in intermediate table
-            if ($user->hasPermissionTo('admin')) {
+            if ($user->hasPermissionTo(User::ABILITIES[0])) {
                 return true;
             }
             return false;
@@ -43,7 +44,7 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('assignPermissionToRole', function ($user) use ($global) {
             $user = $global->currentUser;
             // The user need to HAVE THE ROLE in intermediate table
-            if ($user->hasPermissionTo('admin')) {
+            if ($user->hasPermissionTo(User::ABILITIES[0])) {
                 return true;
             }
             return false;
