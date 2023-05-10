@@ -52,14 +52,7 @@ class Controller extends BaseController
      */
     public function show(string $id): Response
     {
-        // TODO: missing permission check
-        $result = $this->currentQuery()
-            ->with($this->modelObj->showingRelations)
-            ->where($this->modelObj->queryBy, $id)
-            ->orWhere('id', $id)
-            ->select($this->modelObj->getAliasString())
-            ->first();
-        return Helper::getResponse($result);
+        return $this->handleShow($id);
     }
 
 
@@ -82,7 +75,6 @@ class Controller extends BaseController
      */
     public function store(Request $request): Response
     {
-        // TODO: missing permission check
         $modelValidator = call_user_func($this->model . '::getStoreValidator', $request);
         $callback = function ($request) {
             return $this->handleStore($request);
@@ -99,10 +91,6 @@ class Controller extends BaseController
      */
     public function update(Request $request, $id): Response
     {
-        // TODO: should apply this record-permission-checking on other actions as well
-        //        if (!$this->modelObj->checkPermission($id)) {
-        //            return Helper::getResponse(null, 'Not allowed', 403);
-        //        }
         $modelValidator = call_user_func($this->model . '::getUpdateValidator', $request, $id);
         $callback = function ($request) use ($id) {
             return $this->handleUpdate($request, $id);
@@ -118,6 +106,20 @@ class Controller extends BaseController
     {
         try {
             $result = $this->modelObj->queryWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
+    }
+
+    /**
+     * @param $id
+     * @return Response
+     */
+    public function handleShow($id): Response
+    {
+        try {
+            $result = $this->modelObj->showWithCustomFormat($id);
             return Helper::getResponse($result);
         } catch (Exception $e) {
             return Helper::handleApiError($e);
@@ -165,14 +167,6 @@ class Controller extends BaseController
         } catch (Exception $e) {
             return Helper::handleApiError($e);
         }
-    }
-
-    /**
-     * @return Builder
-     */
-    private function currentQuery(): Builder
-    {
-        return call_user_func($this->model . '::query');
     }
 
     /**

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Common\Constant;
 use App\Common\GlobalVariable;
 use Exception;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +35,7 @@ class BaseModel extends Model
     public $queryBy = 'id';
     public $showingRelations = [];
     protected $groupBy = [];
+    protected $softDelete = True;
 
     public function __construct(array $attributes = [])
     {
@@ -69,6 +72,7 @@ class BaseModel extends Model
             DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
             $model = $model->groupBy($groupBy);
         }
+        $model = $model->where(Constant::IS_ACTIVE, 1);
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
@@ -78,6 +82,24 @@ class BaseModel extends Model
         return $model
             ->simplePaginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
+    }
+
+    /**
+     * @param $id
+     * @return Builder|Model|object|null
+     */
+    public function showWithCustomFormat($id)
+    {
+        return $this::query()
+            ->with($this->showingRelations)
+            ->where(function (Builder $query) use ($id) {
+                $query
+                    ->where($this->queryBy, $id)
+                    ->orWhere('id', $id);
+            })
+            ->where(Constant::IS_ACTIVE, $id)
+            ->select($this->getAliasString())
+            ->first();
     }
 
     /**
@@ -131,11 +153,16 @@ class BaseModel extends Model
      */
     public function destroyWithCustomFormat($id): bool
     {
+        if ($this->softDelete) {
+            return $this::update([
+                Constant::IS_ACTIVE => 0
+            ]);
+        }
         return (bool) $this::destroy($id);
     }
 
     /**
-     * @return \Illuminate\Database\Query\Expression
+     * @return Expression
      */
     public function getAliasString()
     {
@@ -184,37 +211,6 @@ class BaseModel extends Model
     function filterByRelation($model)
     {
         return $model;
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     * By default, no permission should be granted to any record
-     * This function get the user id that links to current Model's record,
-     * which will determine if this user can access the requesting record or not
-     */
-    function getUserId($id)
-    {
-        return null;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public function checkPermission($id): bool
-    {
-        $result = false;
-        try {
-            $userId = $this->getUserId($id);
-            if ($userId) {
-                /** @var GlobalVariable $global */
-                $global = app(GlobalVariable::class);
-                $result = $userId == $global->currentUser->{'id'};
-            }
-        } catch (Exception $e) {
-        }
-        return $result;
     }
 
     /**
