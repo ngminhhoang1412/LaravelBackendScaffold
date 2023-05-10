@@ -1,10 +1,14 @@
 <?php
 
 
+namespace App\sample;
+
+use App\Models\BaseModel;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
-class Post extends \App\Models\BaseModel
+class Post extends BaseModel
 {
 
     protected $fillable = [
@@ -24,7 +28,7 @@ class Post extends \App\Models\BaseModel
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\User::class);
+        return $this->belongsTo(User::class);
     }
 
     static function getStoreValidator(Request $request): array
