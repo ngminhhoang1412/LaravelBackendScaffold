@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Common\Helper;
 use App\Models\BaseModel;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -14,7 +13,6 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use PHPUnit\TextUI\Help;
 
 class Controller extends BaseController
 {
@@ -47,12 +45,17 @@ class Controller extends BaseController
     /**
      * Display the specified resource.
      *
+     * @param Request $request
      * @param string $id
      * @return Response
      */
-    public function show(string $id): Response
+    public function show(Request $request, string $id): Response
     {
-        return $this->handleShow($id);
+        $modelValidator = call_user_func($this->model . '::getShowValidator');
+        $callback = function ($id) use ($id) {
+            return $this->handleShow($id);
+        };
+        return $this->validateCustom($request, $modelValidator, $callback);
     }
 
 

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Validation\Rule;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 /**
@@ -199,10 +200,18 @@ class BaseModel extends Model
      * @param Request $request
      * @param string $id
      * @return array
+     * Only allow update on active records
      */
     static function getUpdateValidator(Request $request, string $id): array
     {
-        return [];
+        return [
+            Rule::exists(self::retrieveTableName())
+                ->where(function (Builder $query) use ($id) {
+                return $query
+                    ->where('id', $id)
+                    ->where(Constant::IS_ACTIVE, 1);
+            })
+        ];
     }
 
     /**
