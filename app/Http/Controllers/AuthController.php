@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Common\Helper;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -43,13 +44,15 @@ class AuthController extends Controller
                 'email' => $request['email'],
                 'password' => Hash::make($request['password'])
             ]);
-
-            $newUser = DB::table('users')->where('email','=', $request['email'])->get();
+            
+            $newUserId = DB::table('users')->where('email', '=', $request['email'])->get('id');
+            $guestRoleId = DB::table(Role::retrieveTableName())->where('name', '=', 'guest')->get('id');
+            
             DB::table($tableNames['model_has_roles'])
                 ->insert([
-                    'role_id' => (array_search('guest',array_keys(User::ROLES))+1),
+                    'role_id' => $guestRoleId[0]->id,
                     'model_type' => User::class,
-                    'model_id' => $newUser[0]->id
+                    'model_id' => $newUserId[0]->id
                 ]);
 
             return Helper::getResponse([

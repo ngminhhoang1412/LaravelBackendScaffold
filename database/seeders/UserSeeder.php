@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -25,20 +26,14 @@ class UserSeeder extends Seeder
                 'remember_token' => null,
                 'role' => array_keys(User::ROLES)[0]
             ]);
-
+            
+        $adminRoleId = DB::table(Role::retrieveTableName())->where('name','=','admin')->get('id');
         DB::table($tableNames['model_has_roles'])
             ->insert([
-                'role_id' => (array_search('admin', array_keys(User::ROLES)) + 1),
+                'role_id' => $adminRoleId[0]->id,
                 'model_type' => User::class,
                 'model_id' => $admin
             ]);
-        DB::table((new User)->getTable())
-        ->insert([
-            'email' => env('ADMIN_EMAIL'),
-            'name' => env('ADMIN_NAME'),
-            'password' => Hash::make(env('ADMIN_PASSWORD')),
-            'remember_token' => null,
-            'role' => array_keys(User::ROLES)[0]
-        ]);
+
     }
 }
