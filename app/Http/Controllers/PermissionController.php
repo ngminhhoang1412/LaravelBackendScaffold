@@ -19,8 +19,7 @@ class PermissionController extends Controller
     {
         $role_id = $request->get('role_id');
         $permissions = (array) $request->get('permissions');
-        $global = app(GlobalVariable::class);
-        echo $global->currentUser->id;
+
         DB::beginTransaction();
         try {
             if (Gate::allows('assignPermissionToRole')) {

@@ -18,8 +18,6 @@ class Role extends BaseModel
 
     protected $updatable = [
         'description' => 'string',
-        'created_by' => 'string',
-        'updated_by' => 'string',
         'is_active' => 'boolean'
     ];
 
@@ -33,6 +31,21 @@ class Role extends BaseModel
                 ]
             ],
             parent::getInsertValidator($request)
+        );
+    }
+
+    static function getUpdateValidator(Request $request, string $id): array
+    {
+        return array_merge(
+            [
+                'description' => [
+                    'string'
+                ],
+                'is_active' => [
+                    'boolean'
+                ]
+            ],
+            parent::getUpdateValidator($request, $id)
         );
     }
 

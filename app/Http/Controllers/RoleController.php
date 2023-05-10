@@ -19,8 +19,7 @@ class RoleController extends Controller
     {
         $user_id = $request->get('user_id');
         $role = $request->get('roles');
-        $global = app(GlobalVariable::class);
-        echo $global->currentUser->id;
+
         DB::beginTransaction();
         try {
             if (Gate::allows('assignRoleToUser')) {

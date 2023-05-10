@@ -47,8 +47,8 @@ class AuthController extends Controller
             $newUser = DB::table('users')->where('email','=', $request['email'])->get();
             DB::table($tableNames['model_has_roles'])
                 ->insert([
-                    'role_id' => '6',
-                    'model_type' => 'App\Models\User',
+                    'role_id' => (array_search('guest',array_keys(User::ROLES))+1),
+                    'model_type' => User::class,
                     'model_id' => $newUser[0]->id
                 ]);
 

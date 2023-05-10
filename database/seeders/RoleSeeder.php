@@ -60,12 +60,5 @@ class RoleSeeder extends Seeder
                 'permission_id' => '7',
                 'role_id' => '1'
             ]);
-
-        DB::table($tableNames['model_has_roles'])
-            ->insert([
-                'role_id' => 1,
-                'model_type' => 'App\Models\User',
-                'model_id' => 1
-            ]);
     }
 }
