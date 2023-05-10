@@ -2,13 +2,22 @@
 
 namespace App\Models;
 
+use App\Common\GlobalVariable;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
+/**
+ * @method static insert(array $params)
+ * @method static create(array $array)
+ * @method static where(string $string, mixed $email)
+ */
 class BaseModel extends Model
 {
     use HasFactory;
@@ -73,16 +82,20 @@ class BaseModel extends Model
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return Builder|Builder[]|Collection|Model|null
      */
-    public function insertWithCustomFormat(Request $request)
+    public function storeWithCustomFormat(Request $request)
     {
-        $keys = array_keys($this::getInsertValidator($request));
+        $keys = array_keys($this::getStoreValidator($request));
+        $additionalFields = $this->getAdditionalStoreFields();
+        $keys = array_merge($keys, array_keys($additionalFields));
+        $insertArray = array_merge($request->toArray(), $additionalFields);
         $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($request) {
-                return [$item => $request[$item]];
+            ->mapWithKeys(function ($item) use ($insertArray) {
+                return [$item => $insertArray[$item]];
             })->toArray();
-        return $this::insert($params);
+        $id = self::query()->insertGetId($params);
+        return $this::query()->find($id);
     }
 
     /**
@@ -150,7 +163,7 @@ class BaseModel extends Model
      * @param Request $request
      * @return array
      */
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return [];
     }
@@ -197,10 +210,18 @@ class BaseModel extends Model
             if ($userId) {
                 /** @var GlobalVariable $global */
                 $global = app(GlobalVariable::class);
-                $result = $userId == $global->currentUser->id;
+                $result = $userId == $global->currentUser->{'id'};
             }
         } catch (Exception $e) {
         }
         return $result;
+    }
+
+    /**
+     * @return array
+     */
+    protected function getAdditionalStoreFields(): array
+    {
+        return [];
     }
 }

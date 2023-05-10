@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Common\Helper;
 use App\Models\BaseModel;
+use Exception;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Foundation\Bus\DispatchesJobs;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+use PHPUnit\TextUI\Help;
 
 class Controller extends BaseController
 {
@@ -60,27 +62,6 @@ class Controller extends BaseController
         return Helper::getResponse($result);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @return Response
-     */
-    public function store(Request $request): Response
-    {
-        return Helper::getResponse(null);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param $id
-     * @return Response
-     */
-    public function edit($id): Response
-    {
-        return Helper::getResponse(null, $id);
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -99,10 +80,10 @@ class Controller extends BaseController
      * @param Request $request
      * @return Response
      */
-    public function create(Request $request): Response
+    public function store(Request $request): Response
     {
         // TODO: missing permission check
-        $modelValidator = call_user_func($this->model . '::getInsertValidator', $request);
+        $modelValidator = call_user_func($this->model . '::getStoreValidator', $request);
         $callback = function ($request) {
             return $this->handleStore($request);
         };
@@ -135,8 +116,12 @@ class Controller extends BaseController
      */
     public function handleIndex(Request $request): Response
     {
-        $result = $this->modelObj->queryWithCustomFormat($request);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->queryWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -145,8 +130,12 @@ class Controller extends BaseController
      */
     public function handleStore(Request $request): Response
     {
-        $result = $this->modelObj->insertWithCustomFormat($request);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->storeWithCustomFormat($request);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -156,8 +145,12 @@ class Controller extends BaseController
      */
     public function handleUpdate(Request $request, $id): Response
     {
-        $result = $this->modelObj->updateWithCustomFormat($request, $id);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->updateWithCustomFormat($request, $id);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -166,8 +159,12 @@ class Controller extends BaseController
      */
     public function handleDestroy($id): Response
     {
-        $result = $this->modelObj->destroyWithCustomFormat($id);
-        return Helper::getResponse($result);
+        try {
+            $result = $this->modelObj->destroyWithCustomFormat($id);
+            return Helper::getResponse($result);
+        } catch (Exception $e) {
+            return Helper::handleApiError($e);
+        }
     }
 
     /**
@@ -191,9 +188,10 @@ class Controller extends BaseController
             $validator->validate();
             return $callback($input);
         } catch (ValidationException $e) {
-            return response([
-                'error' => $validator->errors()->first()
-            ], 400);
+            return Helper::getResponse(
+                null,
+                $validator->errors()->first()
+            );
         }
     }
 }
