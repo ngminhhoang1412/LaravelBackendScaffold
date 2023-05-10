@@ -1,8 +1,6 @@
 <?php
 
-use App\Models\Post;
 use App\Models\User;
-use App\Models\Comment;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Support\Facades\Schema;

@@ -1,7 +1,7 @@
 <?php
 
 
-use App\Http\Controllers\PostController;
+
 use App\Http\Middleware\AuthStore;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
