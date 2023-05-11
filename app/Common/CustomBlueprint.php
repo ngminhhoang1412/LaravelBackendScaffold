@@ -9,6 +9,7 @@ class CustomBlueprint extends Blueprint
 {
     public function audit()
     {
+        $this->increments('id')->unique();
         $this->timestampsDf();
         $this->unsignedBigInteger(Constant::CREATED_BY)->nullable()->default(null);
         $this->unsignedBigInteger(Constant::UPDATED_BY)->nullable()->default(null);
