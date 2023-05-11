@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Middleware\AuthStore;
 use App\sample\PostController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,4 +16,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resource('posts', PostController::class);
+Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
+    Route::resource('posts', PostController::class);
+});
