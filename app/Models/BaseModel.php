@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Common\Constant;
 use App\Common\GlobalVariable;
 use Exception;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -11,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Validation\Rule;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 /**
@@ -33,13 +36,20 @@ class BaseModel extends Model
     public $queryBy = 'id';
     public $showingRelations = [];
     protected $groupBy = [];
+    protected $softDelete = True;
 
     public function __construct(array $attributes = [])
     {
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
         $this->groupBy = array_merge($this->groupBy);
-        $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
+        $this->hidden = array_merge($this->hidden, [
+            Constant::CREATED_BY,
+            Constant::UPDATED_BY,
+            Constant::CREATED_AT,
+            Constant::UPDATED_AT,
+            Constant::IS_ACTIVE
+        ]);
     }
 
     public static function retrieveTableName()
@@ -69,6 +79,7 @@ class BaseModel extends Model
             DB::statement("SET SESSION sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''))");
             $model = $model->groupBy($groupBy);
         }
+        $model = $model->where(Constant::IS_ACTIVE, 1);
         $model = $model->filter();
         if (!$relationsCount) {
             // TODO: it's a bug here, if use withCount and select together, it won't work
@@ -81,19 +92,35 @@ class BaseModel extends Model
     }
 
     /**
+     * @param $id
+     * @return Builder|Model|object|null
+     */
+    public function showWithCustomFormat($id)
+    {
+        return $this::query()
+            ->with($this->showingRelations)
+            ->where(function (Builder $query) use ($id) {
+                $query
+                    ->where($this->queryBy, $id)
+                    ->orWhere('id', $id);
+            })
+            ->where(Constant::IS_ACTIVE, $id)
+            ->select($this->getAliasString())
+            ->first();
+    }
+
+    /**
      * @param Request $request
      * @return Builder|Builder[]|Collection|Model|null
      */
     public function storeWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getStoreValidator($request));
-        $additionalFields = $this->getAdditionalStoreFields();
-        $keys = array_merge($keys, array_keys($additionalFields));
-        $insertArray = array_merge($request->toArray(), $additionalFields);
-        $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($insertArray) {
-                return [$item => $insertArray[$item]];
-            })->toArray();
+        $additionalFields = $this->getAdditionalStoreFields($request);
+        $params = array_merge(
+            collect($request->all())->only($keys)->toArray(),
+            $additionalFields
+        );
         $id = self::query()->insertGetId($params);
         return $this::query()->find($id);
     }
@@ -131,13 +158,23 @@ class BaseModel extends Model
      */
     public function destroyWithCustomFormat($id): bool
     {
+        if ($this->softDelete) {
+            // TODO: audit fields here
+            /** @var GlobalVariable $global */
+            $global = app(GlobalVariable::class);
+            return $this::update([
+                Constant::IS_ACTIVE => 0,
+//                Constant::CREATED_BY => $global->currentUser->id,
+//                Constant::UPDATED_BY => $global->currentUser->id
+            ]);
+        }
         return (bool) $this::destroy($id);
     }
 
     /**
-     * @return \Illuminate\Database\Query\Expression
+     * @return Expression
      */
-    public function getAliasString()
+    public function getAliasString(): Expression
     {
         $result = '*';
         foreach ($this->alias as $key => $value) {
@@ -172,10 +209,18 @@ class BaseModel extends Model
      * @param Request $request
      * @param string $id
      * @return array
+     * Only allow update on active records
      */
     static function getUpdateValidator(Request $request, string $id): array
     {
-        return [];
+        return [
+            Rule::exists(self::retrieveTableName())
+                ->where(function (Builder $query) use ($id) {
+                return $query
+                    ->where('id', $id)
+                    ->where(Constant::IS_ACTIVE, 1);
+            })
+        ];
     }
 
     /**
@@ -187,41 +232,17 @@ class BaseModel extends Model
     }
 
     /**
-     * @param $id
-     * @return mixed
-     * By default, no permission should be granted to any record
-     * This function get the user id that links to current Model's record,
-     * which will determine if this user can access the requesting record or not
-     */
-    function getUserId($id)
-    {
-        return null;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public function checkPermission($id): bool
-    {
-        $result = false;
-        try {
-            $userId = $this->getUserId($id);
-            if ($userId) {
-                /** @var GlobalVariable $global */
-                $global = app(GlobalVariable::class);
-                $result = $userId == $global->currentUser->{'id'};
-            }
-        } catch (Exception $e) {
-        }
-        return $result;
-    }
-
-    /**
+     * @param Request $request
      * @return array
      */
-    protected function getAdditionalStoreFields(): array
+    protected function getAdditionalStoreFields(Request $request): array
     {
-        return [];
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        // TODO: audit fields here
+        return [
+//            Constant::CREATED_BY => $global->currentUser->id,
+//            Constant::UPDATED_BY => $global->currentUser->id
+        ];
     }
 }
