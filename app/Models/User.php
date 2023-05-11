@@ -18,6 +18,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
+    const TABLE_NAME = 'users';
+
     use HasApiTokens, HasFactory, Notifiable;
     use HasRoles;
     use HasPermissions;
