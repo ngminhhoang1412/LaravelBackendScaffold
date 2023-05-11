@@ -1,10 +1,9 @@
 <?php
 
+use App\Common\Constant;
+use App\Common\CustomBlueprint;
 use App\Models\User;
-use App\Models\Permission;
-use App\Models\Role;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class CreateBase extends Migration
@@ -16,7 +15,7 @@ class CreateBase extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create(User::TABLE_NAME, function (CustomBlueprint $table) {
             $roles = array_keys(User::ROLES);
             $table->increments('id')->unique();
             $table->string('name')->nullable(false);
@@ -25,11 +24,7 @@ class CreateBase extends Migration
             $table->string('password')->nullable(false);
             $table->rememberToken()->default(null);
             $table->enum('role', $roles)->nullable(false)->default($roles[5]);
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->audit();
         });
     }
 
@@ -40,6 +35,6 @@ class CreateBase extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists(User::TABLE_NAME);
     }
 }
