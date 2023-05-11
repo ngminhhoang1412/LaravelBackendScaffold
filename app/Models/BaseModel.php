@@ -159,8 +159,13 @@ class BaseModel extends Model
     public function destroyWithCustomFormat($id): bool
     {
         if ($this->softDelete) {
+            // TODO: audit fields here
+            /** @var GlobalVariable $global */
+            $global = app(GlobalVariable::class);
             return $this::update([
-                Constant::IS_ACTIVE => 0
+                Constant::IS_ACTIVE => 0,
+//                Constant::CREATED_BY => $global->currentUser->id,
+//                Constant::UPDATED_BY => $global->currentUser->id
             ]);
         }
         return (bool) $this::destroy($id);
@@ -232,6 +237,12 @@ class BaseModel extends Model
      */
     protected function getAdditionalStoreFields(Request $request): array
     {
-        return [];
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        // TODO: audit fields here
+        return [
+//            Constant::CREATED_BY => $global->currentUser->id,
+//            Constant::UPDATED_BY => $global->currentUser->id
+        ];
     }
 }

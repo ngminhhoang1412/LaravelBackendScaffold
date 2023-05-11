@@ -58,8 +58,11 @@ class Post extends BaseModel
 
     function getAdditionalStoreFields(Request $request): array
     {
-        return [
-            'user_id' => 1
-        ];
+        return array_merge(
+            [
+                'user_id' => 1
+            ],
+            parent::getAdditionalStoreFields($request)
+        );
     }
 }
