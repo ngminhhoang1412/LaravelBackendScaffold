@@ -56,7 +56,7 @@ class Post extends BaseModel
         );
     }
 
-    function getAdditionalStoreFields(): array
+    function getAdditionalStoreFields(Request $request): array
     {
         return [
             'user_id' => 1

@@ -116,13 +116,11 @@ class BaseModel extends Model
     public function storeWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getStoreValidator($request));
-        $additionalFields = $this->getAdditionalStoreFields();
-        $keys = array_merge($keys, array_keys($additionalFields));
-        $insertArray = array_merge($request->toArray(), $additionalFields);
-        $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($insertArray) {
-                return [$item => $insertArray[$item]];
-            })->toArray();
+        $additionalFields = $this->getAdditionalStoreFields($request);
+        $params = array_merge(
+            collect($request->all())->only($keys)->toArray(),
+            $additionalFields
+        );
         $id = self::query()->insertGetId($params);
         return $this::query()->find($id);
     }
@@ -171,7 +169,7 @@ class BaseModel extends Model
     /**
      * @return Expression
      */
-    public function getAliasString()
+    public function getAliasString(): Expression
     {
         $result = '*';
         foreach ($this->alias as $key => $value) {
@@ -229,9 +227,10 @@ class BaseModel extends Model
     }
 
     /**
+     * @param Request $request
      * @return array
      */
-    protected function getAdditionalStoreFields(): array
+    protected function getAdditionalStoreFields(Request $request): array
     {
         return [];
     }
