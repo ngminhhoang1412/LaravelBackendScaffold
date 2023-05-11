@@ -43,7 +43,13 @@ class BaseModel extends Model
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
         $this->groupBy = array_merge($this->groupBy);
-        $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
+        $this->hidden = array_merge($this->hidden, [
+            Constant::CREATED_BY,
+            Constant::UPDATED_BY,
+            Constant::CREATED_AT,
+            Constant::UPDATED_AT,
+            Constant::IS_ACTIVE
+        ]);
     }
 
     public static function retrieveTableName()

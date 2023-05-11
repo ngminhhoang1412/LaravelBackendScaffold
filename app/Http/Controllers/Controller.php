@@ -45,17 +45,12 @@ class Controller extends BaseController
     /**
      * Display the specified resource.
      *
-     * @param Request $request
      * @param string $id
      * @return Response
      */
-    public function show(Request $request, string $id): Response
+    public function show(string $id): Response
     {
-        $modelValidator = call_user_func($this->model . '::getShowValidator');
-        $callback = function ($id) use ($id) {
             return $this->handleShow($id);
-        };
-        return $this->validateCustom($request, $modelValidator, $callback);
     }
 
 
