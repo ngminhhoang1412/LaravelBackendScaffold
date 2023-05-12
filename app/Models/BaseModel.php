@@ -107,16 +107,13 @@ class BaseModel extends Model
     public function insertWithCustomFormat(Request $request)
     {
         $keys = array_keys($this::getInsertValidator($request));
-        $additionalFillable = $this->getAdditionalUpdate();
-        $keys = array_merge($keys, array_keys($additionalFillable));
-        $insertArray = array_merge($request->toArray(), $additionalFillable);
-        $params = collect($keys)
-            ->mapWithKeys(function ($item) use ($insertArray) {
-                return [$item => $insertArray[$item]];
-            })->toArray();
-        $id = $this::query()
-            ->insertGetId($params);
-        return $this->find($id);
+        $additionalFields = $this->getAdditionalInsert($request);
+        $params = array_merge(
+            collect($request->all())->only($keys)->toArray(),
+            $additionalFields
+        );
+        $id = self::query()->insertGetId($params);
+        return $this::query()->find($id);
     }
 
     /**
@@ -216,25 +213,6 @@ class BaseModel extends Model
     function getUserId(): mixed
     {
         return null;
-    }
-
-    /**
-     * @param $id
-     * @return bool
-     */
-    public function checkPermission($id): bool
-    {
-        $result = false;
-        try {
-            $userId = $this->getUserId($id);
-            if ($userId) {
-                /** @var GlobalVariable $global */
-                $global = app(GlobalVariable::class);
-                $result = $userId == $global->currentUser->id;
-            }
-        } catch (Exception $e) {
-        }
-        return $result;
     }
 
     /**
