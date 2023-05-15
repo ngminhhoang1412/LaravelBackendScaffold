@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Common\Helper;
+use App\Models\AbsenceType;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -44,16 +45,30 @@ class AuthController extends Controller
                 'email' => $request['email'],
                 'password' => Hash::make($request['password'])
             ]);
-            
+
             $newUserId = DB::table('users')->where('email', '=', $request['email'])->get('id');
             $guestRoleId = DB::table(Role::retrieveTableName())->where('name', '=', 'guest')->get('id');
-            
+
+            // Assign 'guest' role for new user
             DB::table($tableNames['model_has_roles'])
                 ->insert([
                     'role_id' => $guestRoleId[0]->id,
                     'model_type' => User::class,
                     'model_id' => $newUserId[0]->id
                 ]);
+
+            // Assign the default absence amount for the new user
+            DB::table(AbsenceType::retrieveTableName())
+                ->where('id', '>', 3)
+                ->get('id')->map(function ($value) use ($newUserId) {
+                    DB::table(AbsenceType::INTERMEDIATE_TABLES[0])
+                        ->insert([
+                            'user_id' => $newUserId[0]->id,
+                            'absence_type_id' => $value->id,
+                            'amount' => AbsenceType::DEFAULT_AMOUNT
+                        ]);
+                });
+
 
             return Helper::getResponse([
                 'token' => $this->getToken($user, 'guest')

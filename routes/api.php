@@ -1,11 +1,13 @@
 <?php
 
-
+use App\Http\Controllers\AbsenceController;
+use App\Http\Controllers\AbsenceRequestController;
 use App\Http\Middleware\AuthStore;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +25,11 @@ Route::post('auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
+
     Route::post('permission/assign', [PermissionController::class, 'assignPermissionToRole']);
     Route::post('role/assign', [RoleController::class, 'assignRoleToUser']);
+    Route::post('user/salary', [UserController::class, 'updateSalary']);
+    
+    Route::resource('absence-types', AbsenceController::class);
+    Route::resource('absence-request', AbsenceRequestController::class);
 });
