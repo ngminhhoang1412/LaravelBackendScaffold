@@ -66,15 +66,7 @@ class User extends Authenticatable
     ];
 
     const ROLES = [
-        "admin" => [
-            self::ABILITIES[0],
-            self::ABILITIES[1],
-            self::ABILITIES[2],
-            self::ABILITIES[3],
-            self::ABILITIES[4],
-            self::ABILITIES[5],
-            self::ABILITIES[6],
-        ],
+        "admin" => self::ABILITIES,
         "leader" => [],
         "accountant" => [],
         "hr" => [],
