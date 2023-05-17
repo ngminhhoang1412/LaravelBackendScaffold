@@ -16,7 +16,7 @@ class Group extends BaseModel
 {
     use HasFactory;
 
-    const INTERMEDIATE_TABLE =[
+    const INTERMEDIATE_TABLE = [
         'group_link'
     ];
 
@@ -98,6 +98,15 @@ class Group extends BaseModel
      * @return array
      */
     protected function getAdditionalUpdate()
+    {
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        return [
+            'user_id' => $global->currentUser->id
+        ];
+    }
+
+    protected function getAdditionalInsert($request)
     {
         /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);

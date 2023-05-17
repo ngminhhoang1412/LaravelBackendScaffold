@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Http\Request;
@@ -102,7 +103,7 @@ class BaseModel extends Model
 
     /**
      * @param Request $request
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|Collection|Model|null
      */
     public function insertWithCustomFormat(Request $request)
     {
@@ -224,9 +225,10 @@ class BaseModel extends Model
     }
 
     /**
+     * @param $request
      * @return array
      */
-    protected function getAdditionalInsert()
+    protected function getAdditionalInsert($request)
     {
         return [];
     }

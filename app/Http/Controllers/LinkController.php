@@ -26,6 +26,7 @@ class LinkController extends Controller
      */
     public function updateLinkGroup(Request $request, $id): Response
     {
+        // TODO: missing check on current user's links, current user's groups
         $callback = function ($request) use ($id) {
             $groups = $request->get('groups');
             DB::beginTransaction();

@@ -39,6 +39,12 @@ class Link extends BaseModel
     protected $alias = [
         'SUM(amount)' => 'total_amount'
     ];
+
+    protected $updatable = [
+        'name' => 'string',
+        'link' => 'string'
+    ];
+
     /**
      * @return BelongsTo
      */
@@ -118,9 +124,10 @@ class Link extends BaseModel
     }
 
     /**
+     * @param $request
      * @return array
      */
-    protected function getAdditionalInsert(){
+    protected function getAdditionalInsert($request){
         /** @var GlobalVariable $global */
         $global = app(GlobalVariable::class);
         $user_id = $global->currentUser->id;
