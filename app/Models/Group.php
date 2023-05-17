@@ -121,15 +121,26 @@ class Group extends BaseModel
         ];
     }
 
-    public function getLinksFromGroup($id)
+    protected function getCustomFilterByRelation()
     {
-        $link_id = array();
-        DB::table(Group::INTERMEDIATE_TABLE[0])
-            ->where('group_id', '=', $id)
-            ->get('link_id')->map(function ($value) use (&$link_id) {
-                $link_id[] = $value->link_id;
-            });
+        $request = new Request();
+        return [
+            'relation' => $request->input('relation'),
+            'condition' => $request->input('condition')
+        ];
+    }
 
-        return Helper::getResponse(["link_id" => $link_id]);
+    public function getLinksFromGroup(Request $request, $id)
+    {
+        // $a =
+        //     Group::with(['links' => function ($query) {
+        //         $query->select(Link::retrieveTableName() . ".id");
+        //     }])->whereHas('links', function ($query) use ($id) {
+        //         $query->where(Group::retrieveTableName().'.id', '=', $id);
+        //     })->get();
+
+        // echo json_encode($a);
+
+        return parent::queryWithCustomFormat($request);
     }
 }

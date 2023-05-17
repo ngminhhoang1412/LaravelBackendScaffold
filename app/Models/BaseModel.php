@@ -49,7 +49,7 @@ class BaseModel extends Model
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
         $this->groupBy = array_merge($this->groupBy);
-        $this->hidden = array_merge($this->hidden, ['updated_at', 'created_at']);
+        $this->hidden = array_merge($this->hidden, ['updated_at']);
     }
 
     /**
@@ -91,12 +91,13 @@ class BaseModel extends Model
         $model = $this->filterByRelation($model);
         $customFilterByRelation = $this->getCustomFilterByRelation();
         if ($customFilterByRelation) {
+            echo json_encode($customFilterByRelation);
             $model = $model->whereHas($customFilterByRelation['relation'], function (Builder $query)
             use ($customFilterByRelation) {
                 $query->where($customFilterByRelation['condition']);
             });
         }
-
+        echo $model->toSql();
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
