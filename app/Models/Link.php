@@ -33,7 +33,8 @@ class Link extends BaseModel
     ];
 
     protected $groupBy = [
-        'link'
+        // TODO: why?? remove for now
+//        'link'
     ];
 
     protected $alias = [
