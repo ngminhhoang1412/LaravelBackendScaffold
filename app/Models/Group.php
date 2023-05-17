@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
+use App\Common\Helper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,6 +20,10 @@ class Group extends BaseModel
 
     const INTERMEDIATE_TABLE = [
         'group_link'
+    ];
+
+    protected $filters = [
+        'link'
     ];
 
     protected $fillable = [
@@ -113,5 +119,17 @@ class Group extends BaseModel
         return [
             'user_id' => $global->currentUser->id
         ];
+    }
+
+    public function getLinksFromGroup($id)
+    {
+        $link_id = array();
+        DB::table(Group::INTERMEDIATE_TABLE[0])
+            ->where('group_id', '=', $id)
+            ->get('link_id')->map(function ($value) use (&$link_id) {
+                $link_id[] = $value->link_id;
+            });
+
+        return Helper::getResponse(["link_id" => $link_id]);
     }
 }

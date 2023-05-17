@@ -32,10 +32,6 @@ class Link extends BaseModel
         'user_id'
     ];
 
-    protected $groupBy = [
-        'link'
-    ];
-
     protected $alias = [
         'SUM(amount)' => 'total_amount'
     ];

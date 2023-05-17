@@ -25,5 +25,6 @@ Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {
         Route::resource('links',LinkController::class);
         Route::resource('groups',GroupController::class);
         Route::put('links/{id}/groups', [LinkController::class, 'updateLinkGroup']);
+        Route::get('groups/{id}/links', [GroupController::class, 'getLinksFromGroup']);
 });
 

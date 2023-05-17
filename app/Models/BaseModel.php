@@ -84,6 +84,7 @@ class BaseModel extends Model
         }
         $model = $model->filter();
         if (!$relationsCount) {
+            DB::statement("SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
             // TODO: it's a bug here, if use withCount and select together, it won't work
             $model = $model->select($this->getAliasString());
         }
@@ -237,7 +238,8 @@ class BaseModel extends Model
     /**
      * @return array
      */
-    protected function getCustomFilterByRelation(){
+    protected function getCustomFilterByRelation()
+    {
         return [];
     }
 }

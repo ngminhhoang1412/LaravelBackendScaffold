@@ -28,6 +28,7 @@ class LinkController extends Controller
     {
         // TODO: missing check on current user's links, current user's groups
         $callback = function ($request) use ($id) {
+            $link = Link::where('id', '=', $id)->get('link');
             $groups = $request->get('groups');
             DB::beginTransaction();
             try {
@@ -43,8 +44,7 @@ class LinkController extends Controller
             } catch (\Exception $e) {
                 DB::rollBack();
             }
-            return Helper::getResponse(Link::with('groups')->get());
-
+            return Helper::getResponse([["link" => $link[0]->link, "groups" => $groups]]);
         };
         $validator = [
             'groups' => [
