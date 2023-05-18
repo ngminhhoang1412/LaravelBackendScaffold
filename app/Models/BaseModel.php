@@ -49,7 +49,7 @@ class BaseModel extends Model
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
         $this->groupBy = array_merge($this->groupBy);
-        $this->hidden = array_merge($this->hidden, ['updated_at']);
+        $this->hidden = $this->getHiddenField();
     }
 
     /**
@@ -240,5 +240,13 @@ class BaseModel extends Model
     protected function getCustomFilterByRelation()
     {
         return [];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHiddenField()
+    {
+        return ['updated_at', 'created_at'];
     }
 }

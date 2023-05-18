@@ -87,6 +87,17 @@ class Link extends BaseModel
             parent::getInsertValidator($request)
         );
     }
+    /**
+     * @return array
+     */
+    protected function getHiddenField()
+    {
+        return array_merge(
+            [
+                'updated_at'
+            ]
+        );
+    }
 
     /**
      * @param Request $request

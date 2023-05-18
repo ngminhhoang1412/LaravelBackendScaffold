@@ -22,10 +22,6 @@ class Group extends BaseModel
         'group_link'
     ];
 
-    protected $filters = [
-        'link'
-    ];
-
     protected $fillable = [
         'description'
     ];
