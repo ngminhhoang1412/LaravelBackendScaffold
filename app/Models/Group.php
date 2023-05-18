@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use App\Common\GlobalVariable;
+use App\Common\Helper;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -114,4 +116,27 @@ class Group extends BaseModel
             'user_id' => $global->currentUser->id
         ];
     }
+
+    // protected function getCustomFilterByRelation()
+    // {
+    //     $request = new Request();
+    //     return [
+    //         'relation' => $request->input('relation'),
+    //         'condition' => $request->input('condition')
+    //     ];
+    // }
+
+    // public function getLinksFromGroup(Request $request, $id)
+    // {
+    //     // $a =
+    //     //     Group::with(['links' => function ($query) {
+    //     //         $query->select(Link::retrieveTableName() . ".id");
+    //     //     }])->whereHas('links', function ($query) use ($id) {
+    //     //         $query->where(Group::retrieveTableName().'.id', '=', $id);
+    //     //     })->get();
+
+    //     // echo json_encode($a);
+
+    //     return parent::queryWithCustomFormat($request);
+    // }
 }

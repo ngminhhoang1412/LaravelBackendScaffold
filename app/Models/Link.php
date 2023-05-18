@@ -37,7 +37,7 @@ class Link extends BaseModel
     ];
 
     protected $alias = [
-        'SUM(amount)' => 'total_amount'
+        // 'SUM(amount)' => 'total_amount'
     ];
 
     protected $updatable = [
@@ -85,6 +85,17 @@ class Link extends BaseModel
                 ]
             ],
             parent::getInsertValidator($request)
+        );
+    }
+    /**
+     * @return array
+     */
+    protected function getHiddenField()
+    {
+        return array_merge(
+            [
+                'updated_at'
+            ]
         );
     }
 
