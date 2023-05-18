@@ -9,9 +9,9 @@ class GroupController extends Controller
 {
     public $model = Group::class;
 
-    public function getLinksFromGroup(Request $request,$id)
-    {
-        $modelObj = $this->modelObj;
-        return $modelObj->getLinksFromGroup($request, $id);
-    }
+    // public function getLinksFromGroup(Request $request,$id)
+    // {
+    //     $modelObj = $this->modelObj;
+    //     return $modelObj->getLinksFromGroup($request, $id);
+    // }
 }

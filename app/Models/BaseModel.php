@@ -84,20 +84,18 @@ class BaseModel extends Model
         }
         $model = $model->filter();
         if (!$relationsCount) {
-            DB::statement("SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
+            // DB::statement("SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
             // TODO: it's a bug here, if use withCount and select together, it won't work
             $model = $model->select($this->getAliasString());
         }
         $model = $this->filterByRelation($model);
         $customFilterByRelation = $this->getCustomFilterByRelation();
         if ($customFilterByRelation) {
-            echo json_encode($customFilterByRelation);
             $model = $model->whereHas($customFilterByRelation['relation'], function (Builder $query)
             use ($customFilterByRelation) {
                 $query->where($customFilterByRelation['condition']);
             });
         }
-        echo $model->toSql();
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);

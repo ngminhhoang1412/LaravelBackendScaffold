@@ -121,26 +121,26 @@ class Group extends BaseModel
         ];
     }
 
-    protected function getCustomFilterByRelation()
-    {
-        $request = new Request();
-        return [
-            'relation' => $request->input('relation'),
-            'condition' => $request->input('condition')
-        ];
-    }
+    // protected function getCustomFilterByRelation()
+    // {
+    //     $request = new Request();
+    //     return [
+    //         'relation' => $request->input('relation'),
+    //         'condition' => $request->input('condition')
+    //     ];
+    // }
 
-    public function getLinksFromGroup(Request $request, $id)
-    {
-        // $a =
-        //     Group::with(['links' => function ($query) {
-        //         $query->select(Link::retrieveTableName() . ".id");
-        //     }])->whereHas('links', function ($query) use ($id) {
-        //         $query->where(Group::retrieveTableName().'.id', '=', $id);
-        //     })->get();
+    // public function getLinksFromGroup(Request $request, $id)
+    // {
+    //     // $a =
+    //     //     Group::with(['links' => function ($query) {
+    //     //         $query->select(Link::retrieveTableName() . ".id");
+    //     //     }])->whereHas('links', function ($query) use ($id) {
+    //     //         $query->where(Group::retrieveTableName().'.id', '=', $id);
+    //     //     })->get();
 
-        // echo json_encode($a);
+    //     // echo json_encode($a);
 
-        return parent::queryWithCustomFormat($request);
-    }
+    //     return parent::queryWithCustomFormat($request);
+    // }
 }
