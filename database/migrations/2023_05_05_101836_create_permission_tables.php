@@ -1,7 +1,7 @@
 <?php
 
+use App\Common\CustomBlueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Spatie\Permission\PermissionRegistrar;
 
@@ -11,6 +11,7 @@ class CreatePermissionTables extends Migration
      * Run the migrations.
      *
      * @return void
+     * @throws Exception
      */
     public function up()
     {
@@ -19,28 +20,23 @@ class CreatePermissionTables extends Migration
         $teams = config('permission.teams');
 
         if (empty($tableNames)) {
-            throw new \Exception('Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.');
+            throw new Exception('Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.');
         }
         if ($teams && empty($columnNames['team_foreign_key'] ?? null)) {
-            throw new \Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
+            throw new Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
         }
 
-        Schema::create($tableNames['permissions'], function (Blueprint $table) {
+        Schema::create($tableNames['permissions'], function (CustomBlueprint $table) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id'); // permission id
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name')->default('web'); // For MySQL 8.0 use string('guard_name', 125);
             $table->string('description')->nullable();
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
-
+            $table->audit();
             $table->unique(['name', 'guard_name']);
         });
 
-        Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
+        Schema::create($tableNames['roles'], function (CustomBlueprint $table) use ($teams, $columnNames) {
             $table->engine = 'InnoDB';
             $table->bigIncrements('id'); // role id
             if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
@@ -49,13 +45,8 @@ class CreatePermissionTables extends Migration
             }
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name')->default('web'); // For MySQL 8.0 use string('guard_name', 125);
-
             $table->string('description')->nullable();
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->audit();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
@@ -63,23 +54,17 @@ class CreatePermissionTables extends Migration
             }
         });
 
-        Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $teams) {
+        Schema::create($tableNames['model_has_permissions'], function (CustomBlueprint $table) use ($tableNames, $columnNames, $teams) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
 
             $table->string('model_type');
             $table->unsignedBigInteger($columnNames['model_morph_key']);
             $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_permissions_model_id_model_type_index');
-
             $table->foreign(PermissionRegistrar::$pivotPermission)
                 ->references('id') // permission id
                 ->on($tableNames['permissions'])
                 ->onDelete('cascade');
-
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->audit();
             if ($teams) {
                 $table->unsignedBigInteger($columnNames['team_foreign_key']);
                 $table->index($columnNames['team_foreign_key'], 'model_has_permissions_team_foreign_key_index');
@@ -96,7 +81,7 @@ class CreatePermissionTables extends Migration
             }
         });
 
-        Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $teams) {
+        Schema::create($tableNames['model_has_roles'], function (CustomBlueprint $table) use ($tableNames, $columnNames, $teams) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
 
             $table->string('model_type');
@@ -107,12 +92,7 @@ class CreatePermissionTables extends Migration
                 ->references('id') // role id
                 ->on($tableNames['roles'])
                 ->onDelete('cascade');
-
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->audit();
             if ($teams) {
                 $table->unsignedBigInteger($columnNames['team_foreign_key']);
                 $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
@@ -129,7 +109,7 @@ class CreatePermissionTables extends Migration
             }
         });
 
-        Schema::create($tableNames['role_has_permissions'], function (Blueprint $table) use ($tableNames) {
+        Schema::create($tableNames['role_has_permissions'], function (CustomBlueprint $table) use ($tableNames) {
             $table->unsignedBigInteger(PermissionRegistrar::$pivotPermission);
             $table->unsignedBigInteger(PermissionRegistrar::$pivotRole);
 
@@ -142,12 +122,7 @@ class CreatePermissionTables extends Migration
                 ->references('id') // role id
                 ->on($tableNames['roles'])
                 ->onDelete('cascade');
-
-            $table->string('created_by')->nullable();
-            $table->string('updated_by')->nullable();
-            $table->boolean('is_active')->default(true);
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();
+            $table->audit();
 
             $table->primary([PermissionRegistrar::$pivotPermission, PermissionRegistrar::$pivotRole], 'permission_role_permission_id_role_id_primary');
         });
@@ -161,13 +136,15 @@ class CreatePermissionTables extends Migration
      * Reverse the migrations.
      *
      * @return void
+     * @throws Exception
      */
     public function down()
     {
         $tableNames = config('permission.table_names');
 
         if (empty($tableNames)) {
-            throw new \Exception('Error: config/permission.php not found and defaults could not be merged. Please publish the package configuration before proceeding, or drop the tables manually.');
+            throw new Exception('Error: config/permission.php not found and defaults could not be merged.
+            Please publish the package configuration before proceeding, or drop the tables manually.');
         }
 
         Schema::drop($tableNames['role_has_permissions']);

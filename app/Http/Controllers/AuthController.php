@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Common\Constant;
 use App\Models\User;
 use App\Common\Helper;
 use App\Models\AbsenceType;
@@ -31,7 +32,7 @@ class AuthController extends Controller
                 $request->all(),
                 [
                     'name' => 'required',
-                    'email' => 'required|email|unique:users,email',
+                    'email' => 'required|email|unique:'. User::TABLE_NAME .',email',
                     'password' => 'required'
                 ]
             );
@@ -46,10 +47,12 @@ class AuthController extends Controller
                 'password' => Hash::make($request['password'])
             ]);
 
-            $newUserId = DB::table('users')->where('email', '=', $request['email'])->get('id');
-            $guestRoleId = DB::table(Role::retrieveTableName())->where('name', '=', 'guest')->get('id');
 
             // Assign 'guest' role for new user
+
+            $newUserId = DB::table(User::TABLE_NAME)->where('email', '=', $request['email'])->get('id');
+            $guestRoleId = DB::table(Role::retrieveTableName())->where('name', '=', 'guest')->get('id');
+
             DB::table($tableNames['model_has_roles'])
                 ->insert([
                     'role_id' => $guestRoleId[0]->id,
