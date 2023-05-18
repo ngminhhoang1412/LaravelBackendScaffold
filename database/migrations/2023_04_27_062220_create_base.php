@@ -1,10 +1,9 @@
 <?php
 
-use App\Common\Constant;
 use App\Common\CustomBlueprint;
 use App\Models\User;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class CreateBase extends Migration
 {
