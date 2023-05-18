@@ -50,9 +50,8 @@ class Controller extends BaseController
      */
     public function show(string $id): Response
     {
-            return $this->handleShow($id);
+        return $this->handleShow($id);
     }
-
 
     /**
      * Remove the specified resource from storage.

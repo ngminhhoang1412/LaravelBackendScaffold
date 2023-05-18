@@ -18,7 +18,12 @@ public_html/hot
 storage/*.key
 Homestead.yaml
 Homestead.json
+storage/resource
+storage/backup-resource
+storage/logs
+docker-compose.override.yml
 
+# Everyfile with .
 .*
 !/.gitignore
 !/public/.htaccess
