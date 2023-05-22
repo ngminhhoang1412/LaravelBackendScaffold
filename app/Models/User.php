@@ -12,9 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 /**
  * @method static insert(array $params)
  * @method static create(array $array)
- * @method static where(string $string, mixed $email)
+ * @method static where(string $string, mixed $param)
  * @method static find($id)
  * @property mixed $id
+ * @property string $table
+ * @property mixed $worker
+ * @property mixed $role
  */
 class User extends Authenticatable
 {

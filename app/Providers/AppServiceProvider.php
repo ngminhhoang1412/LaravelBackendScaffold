@@ -6,6 +6,10 @@ use App\Common\GlobalVariable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @method whereHas($relation, $constraint)
+ * @method orWhere(string $attribute, string $string, string $string1)
+ */
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -15,7 +19,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(GlobalVariable::class, function (){
+        $this->app->singleton(GlobalVariable::class, function () {
             return new GlobalVariable();
         });
     }
