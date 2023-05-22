@@ -27,9 +27,7 @@ class BaseModel extends Model
 {
     use HasFactory;
     use FilterQueryString;
-
     const CUSTOM_LIMIT = 10;
-
     protected $filters = [];
     protected $fillable = [];
     protected $hidden = [];

@@ -23,8 +23,7 @@ class CreateBase extends Migration
             $table->string('password')->nullable(false);
             $table->boolean('confirm_email')->default(false);
             $table->dateTime('last_sent')->nullable();
-            $table->string('otp')->nullable(false)->unique();
-            $table->boolean('is_otp_active')->default(true);
+            $table->string('otp')->nullable()->unique();
             $table->rememberToken()->default(null);
             $table->enum('role', $roles)->nullable(false)->default($roles[5]);
             $table->audit(false);

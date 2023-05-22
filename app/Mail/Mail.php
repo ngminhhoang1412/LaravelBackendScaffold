@@ -45,14 +45,9 @@ class Mail
             ]
         ]);
 
-        $response = $client->post($url, [
+       $client->post($url, [
             'json' => $data
         ]);
 
-        $status_code = $response->getStatusCode();
-        $response_body = $response->getBody()->getContents();
-
-        echo "Status Code: " . $status_code . "\n";
-        echo "Response: " . $response_body . "\n";
     }
 }
