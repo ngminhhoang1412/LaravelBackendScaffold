@@ -18,6 +18,7 @@ use App\Http\Controllers\RoleController;
 |
 */
 
+Route::post('auth/preRegister', [AuthController::class, 'preRegister']);
 Route::post('auth/register', [AuthController::class, 'createUser']);
 Route::post('auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {

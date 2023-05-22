@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Common\Constant;
+use App\Mail\Mail;
 use App\Models\User;
 use App\Common\Helper;
 use App\Models\Role;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -17,6 +19,40 @@ use Illuminate\Support\Facades\Validator;
 class AuthController extends Controller
 {
     const TOKEN_NAME = "API TOKEN";
+
+    /**
+     * @throws GuzzleException
+     */
+    public function sendMailRegister(Request $request)
+    {
+        $htmlFilePath = base_path().'\app\Mail\html\mail.html';
+        $htmlContent = file_get_contents($htmlFilePath);
+        Mail::sendMail($request->get('email'), 'test', $htmlContent);
+    }
+
+    public function confirmEmail(Request $request)
+    {
+        try {
+            $validateUser = Validator::make(
+                $request->all(),
+                [
+                    'otp' => 'required',
+                ]
+            );
+
+            if ($validateUser->fails()) {
+                return Helper::getResponse(null, $validateUser->errors(), 401);
+            }
+
+            $user = User::updated();
+
+            return Helper::getResponse([
+                'token' => $this->getToken($user, 'guest')
+            ]);
+        } catch (\Throwable $th) {
+            return Helper::getResponse(null, $th->getMessage());
+        }
+    }
 
     /**
      * Create User
