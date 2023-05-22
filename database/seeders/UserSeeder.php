@@ -18,14 +18,14 @@ class UserSeeder extends Seeder
     public function run()
     {
         $tableNames = config('permission.table_names');
-//        $admin = DB::table((new User)->getTable())
-//            ->insertGetId([
-//                'email' => env('ADMIN_EMAIL'),
-//                'name' => env('ADMIN_NAME'),
-//                'password' => Hash::make(env('ADMIN_PASSWORD')),
-//                'remember_token' => null,
-//                'role' => array_keys(User::ROLES)[0]
-//            ]);
+        $admin = DB::table((new User)->getTable())
+            ->insertGetId([
+                'email' => env('ADMIN_EMAIL'),
+                'name' => env('ADMIN_NAME'),
+                'password' => Hash::make(env('ADMIN_PASSWORD')),
+                'remember_token' => null,
+                'role' => array_keys(User::ROLES)[0]
+            ]);
 
         $adminRoleId = DB::table(Role::retrieveTableName())->where('name','=','admin')->get('id');
         echo $adminRoleId;
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             ->insert([
                 'role_id' => $adminRoleId[0]->id,
                 'model_type' => User::class,
-                'model_id' => 1
+                'model_id' => $admin
             ]);
 
     }
