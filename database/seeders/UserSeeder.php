@@ -28,7 +28,6 @@ class UserSeeder extends Seeder
             ]);
 
         $adminRoleId = DB::table(Role::retrieveTableName())->where('name','=','admin')->get('id');
-        echo $adminRoleId;
         DB::table($tableNames['model_has_roles'])
             ->insert([
                 'role_id' => $adminRoleId[0]->id,
