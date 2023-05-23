@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
                 'remember_token' => null,
                 'role' => array_keys(User::ROLES)[0]
             ]);
-            
+
         $adminRoleId = DB::table(Role::retrieveTableName())->where('name','=','admin')->get('id');
         DB::table($tableNames['model_has_roles'])
             ->insert([

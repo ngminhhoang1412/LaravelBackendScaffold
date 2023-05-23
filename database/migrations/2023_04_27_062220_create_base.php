@@ -4,7 +4,7 @@ use App\Common\CustomBlueprint;
 use App\Common\CustomSchema;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\Schema;
+use App\Common\Constant;
 
 class CreateBase extends Migration
 {
@@ -21,6 +21,9 @@ class CreateBase extends Migration
             $table->string('email')->nullable(false)->unique();
             $table->string('avatar')->nullable();
             $table->string('password')->nullable(false);
+            $table->boolean('confirm_email')->default(false);
+            $table->dateTime('last_sent')->nullable();
+            $table->string('otp',Constant::OTP_LENGTH)->nullable();
             $table->rememberToken()->default(null);
             $table->enum('role', $roles)->nullable(false)->default($roles[5]);
             $table->audit(false);
