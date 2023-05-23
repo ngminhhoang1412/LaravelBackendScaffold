@@ -30,8 +30,8 @@ class AuthController extends Controller
         $htmlFilePath = base_path() . '\resources/html/mail.php';
         $htmlContent = file_get_contents($htmlFilePath);
         $email = $request->get('email');
-        $user = User::where('email',$email)->first();
-        $link = env('FE_LINK'). '?email='. $email . '&otp='. $user->otp;
+        $user = User::where('email', $email)->first();
+        $link = env('FE_URL'). '?email='. $email . '&otp='. $user->otp;
         $htmlContent = str_replace('{{link}}', $link, $htmlContent);
         Mail::sendMail($email, 'Socapp - Activate your account', $htmlContent);
     }
@@ -67,7 +67,7 @@ class AuthController extends Controller
             );
 
             if ($validateUser->fails()) {
-                return Helper::getResponse(null, $validateUser->errors(), 400);
+                return Helper::getResponse(null, $validateUser->errors());
             }
             $currentTime = new DateTime();
             $email = $request->get('email');
@@ -76,18 +76,24 @@ class AuthController extends Controller
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
             $duration = $endTimeObj->getTimestamp() - $startTimeObj->getTimestamp();
             if ($duration > Constant::MAIL_EXPIRED_TIME) {
-                return Helper::getResponse(null, 'Request Timeout',408);
+                return Helper::getResponse(null, [
+                    'code' => Constant::OTP_TIMEOUT[0],
+                    'message' => Constant::OTP_TIMEOUT[1],
+                ]);
             }
             if ($request->get('otp') == $user->otp) {
                 User::where('email', $email)
                     ->update([
                         'confirm_email' => true
                     ]);
-                return Helper::getResponse('Verify Success');
+                return Helper::getResponse('Verify success');
             } else {
                 User::where('email',$email)
                     ->update(['otp' => base64_encode(random_bytes(Constant::OTP_LENGTH))]);
-                return Helper::getResponse(null, 'OTP changed', 409);
+                return Helper::getResponse(null, [
+                    'code' => Constant::OTP_CHANGED[0],
+                    'message' => Constant::OTP_CHANGED[1],
+                ]);
             }
         } catch (Throwable $th) {
             return Helper::handleApiError($th);
@@ -136,7 +142,7 @@ class AuthController extends Controller
             $this->sendRegisterMail($request);
 
             return Helper::getResponse([
-                'register success'
+                'Register success'
             ]);
         } catch (Throwable $th) {
             return Helper::handleApiError($th);
