@@ -8,7 +8,7 @@ class Constant
     const PRODUCTION_FLAG = 'production';
     const MAIL_X_RAPIDAPI_HOST = 'rapidprod-sendgrid-v1.p.rapidapi.com';
     const MAIL_EXPIRED_TIME = 300;
-    const OTP_LENGHT = 10;
+    const OTP_LENGTH = 10;
     // Common fields
     const CREATED_BY = 'created_by';
     const UPDATED_BY = 'updated_by';
