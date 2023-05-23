@@ -18,8 +18,8 @@ use App\Http\Controllers\RoleController;
 |
 */
 
-Route::post('auth/confirmEmail', [AuthController::class, 'confirmEmail']);
-Route::post('auth/expiredTime', [AuthController::class, 'expiredTime']);
+Route::post('auth/confirm-email', [AuthController::class, 'confirmEmail']);
+Route::get('auth/expired-time', [AuthController::class, 'checkExpiredTime']);
 Route::post('auth/register', [AuthController::class, 'createUser']);
 Route::post('auth/login', [AuthController::class, 'loginUser']);
 Route::middleware(['auth:sanctum', AuthStore::class])->group(function () {

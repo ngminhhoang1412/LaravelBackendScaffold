@@ -24,18 +24,18 @@ class AuthController extends Controller
     /**
      * @throws GuzzleException
      */
-    public function sendMailRegister(Request $request)
+    public function sendRegisterMail(Request $request)
     {
         $htmlFilePath = base_path() . '\resources/html/mail.php';
         $htmlContent = file_get_contents($htmlFilePath);
         $email = $request->get('email');
-        $user = User::where('email', $request->get('email'))->first();
+        $user = User::where('email',$email)->first();
         $link = env('FE_LINK'). '?email='. $email . '&otp='. $user->otp;
         $htmlContent = str_replace('{{link}}', $link, $htmlContent);
-        Mail::sendMail($request->get('email'), 'test', $htmlContent);
+        Mail::sendMail($email, 'Socapp - Activate your account', $htmlContent);
     }
 
-    public function expiredTime(Request $request)
+    public function checkExpiredTime(Request $request)
     {
         try {
             $currentTime = new \DateTime();
@@ -43,14 +43,14 @@ class AuthController extends Controller
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
             $duration = $endTimeObj->getTimestamp() - $startTimeObj->getTimestamp();
-            $expired = Constant::Expired_Mail_Time - $duration;
+            $expired = Constant::MAIL_EXPIRED_TIME - $duration;
             if ($expired > 0){
                 return Helper::getResponse($expired);
             }
             else
-                return Helper::getResponse(null,'experienced');
+                return Helper::getResponse(null,'Time out', 408);
         } catch (\Throwable $th) {
-            return Helper::getResponse(null, $th->getMessage());
+            return Helper::handleApiError($th);
         }
     }
 
@@ -66,29 +66,30 @@ class AuthController extends Controller
             );
 
             if ($validateUser->fails()) {
-                return Helper::getResponse(null, $validateUser->errors(), 401);
+                return Helper::getResponse(null, $validateUser->errors(), 400);
             }
             $currentTime = new \DateTime();
-            $user = User::where('email', $request->get('email'))->first();
+            $email = $request->get('email');
+            $user = User::where('email', $email)->first();
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
             $duration = $endTimeObj->getTimestamp() - $startTimeObj->getTimestamp();
-            if ($duration > Constant::Expired_Mail_Time) {
-                return Helper::getResponse(null, 'expired time, please check mail again');
+            if ($duration > Constant::MAIL_EXPIRED_TIME) {
+                return Helper::getResponse(null, 'Request Timeout',408);
             }
             if ($request->get('otp') == $user->otp) {
-                User::where('email', $request->get('email'))
+                User::where('email', $email)
                     ->update([
                         'confirm_email' => true
                     ]);
-                return Helper::getResponse('confirm success');
+                return Helper::getResponse('Verify Success');
             } else {
-                User::where('email', $request->get('email'))
-                    ->update(['otp' => base64_encode(random_bytes(10))]);
-                return Helper::getResponse(null, 'otp change');
+                User::where('email',$email)
+                    ->update(['otp' => base64_encode(random_bytes(Constant::OTP_LENGHT))]);
+                return Helper::getResponse(null, 'OTP changed', 409);
             }
         } catch (\Throwable $th) {
-            return Helper::getResponse(null, $th->getMessage());
+            return Helper::handleApiError($th);
         }
     }
 
@@ -114,7 +115,7 @@ class AuthController extends Controller
                 return Helper::getResponse(null, $validateUser->errors(), 401);
             }
             User::create([
-                'otp' => base64_encode(random_bytes(10)),
+                'otp' => base64_encode(random_bytes(Constant::OTP_LENGHT)),
                 'name' => $request['name'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
@@ -131,13 +132,13 @@ class AuthController extends Controller
                     'model_id' => $newUserId[0]->id
                 ]);
 
-            $this->sendMailRegister($request);
+            $this->sendRegisterMail($request);
 
             return Helper::getResponse([
                 'register success'
             ]);
         } catch (\Throwable $th) {
-            return Helper::getResponse(null, $th->getMessage());
+            return Helper::handleApiError($th);
         }
     }
 
@@ -168,7 +169,7 @@ class AuthController extends Controller
             $user = User::where('email', $request['email'])->first();
 
             if (!$user->confirm_email) {
-                return Helper::getResponse(null, 'Please create account', 401);
+                return Helper::getResponse(null, 'Please confirm your email', 400);
             }
 
             return Helper::getResponse([

@@ -13,8 +13,8 @@ class Mail
      */
     public static function sendMail($toMail, $subject, $htmlContent = "<html><body><h1>Hello, World!</h1></body></html>")
     {
-        $url = 'https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send';
-        $sender = env('Mail_USERNAME');
+        $url = 'https://'.Constant::MAIL_X_RAPIDAPI_HOST.'/mail/send';
+        $sender = env('MAIL_USERNAME');
         $data = array(
             "personalizations" => array(
                 array(
@@ -40,7 +40,7 @@ class Mail
         $client = new Client([
             'headers' => [
                 'Content-Type' => 'application/json',
-                'X-RapidAPI-Host' => Constant::Mail_X_RapidAPI_Host,
+                'X-RapidAPI-Host' => Constant::MAIL_X_RAPIDAPI_HOST,
                 'X-RapidAPI-Key' =>  env("X_RAPIDAPI_KEY")
             ]
         ]);
