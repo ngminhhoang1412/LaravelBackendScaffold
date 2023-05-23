@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -38,7 +39,7 @@ class AuthController extends Controller
     public function checkExpiredTime(Request $request)
     {
         try {
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
             $user = User::where('email', $request->get('email'))->first();
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
@@ -49,7 +50,7 @@ class AuthController extends Controller
             }
             else
                 return Helper::getResponse(null,'Time out', 408);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return Helper::handleApiError($th);
         }
     }
@@ -68,7 +69,7 @@ class AuthController extends Controller
             if ($validateUser->fails()) {
                 return Helper::getResponse(null, $validateUser->errors(), 400);
             }
-            $currentTime = new \DateTime();
+            $currentTime = new DateTime();
             $email = $request->get('email');
             $user = User::where('email', $email)->first();
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
@@ -88,7 +89,7 @@ class AuthController extends Controller
                     ->update(['otp' => base64_encode(random_bytes(Constant::OTP_LENGTH))]);
                 return Helper::getResponse(null, 'OTP changed', 409);
             }
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return Helper::handleApiError($th);
         }
     }
@@ -119,7 +120,7 @@ class AuthController extends Controller
                 'name' => $request['name'],
                 'email' => $request['email'],
                 'password' => Hash::make($request['password']),
-                'last_sent' => new \DateTime()
+                'last_sent' => new DateTime()
             ]);
 
             $newUserId = DB::table(User::TABLE_NAME)->where('email', '=', $request['email'])->get('id');
@@ -137,7 +138,7 @@ class AuthController extends Controller
             return Helper::getResponse([
                 'register success'
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return Helper::handleApiError($th);
         }
     }
@@ -176,7 +177,7 @@ class AuthController extends Controller
                 'token' => $this->getToken($user, $user->role),
                 'user' => $user
             ]);
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
             return Helper::getResponse(null, $th->getMessage());
         }
     }

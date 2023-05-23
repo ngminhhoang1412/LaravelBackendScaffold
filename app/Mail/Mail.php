@@ -11,7 +11,7 @@ class Mail
     /**
      * @throws GuzzleException
      */
-    public static function sendMail($toMail, $subject, $htmlContent = "<html><body><h1>Hello, World!</h1></body></html>")
+    public static function sendMail($toMail, $subject, $htmlContent)
     {
         $url = 'https://'.Constant::MAIL_X_RAPIDAPI_HOST.'/mail/send';
         $sender = env('MAIL_USERNAME');
