@@ -11,6 +11,7 @@ class Constant
     const OTP_LENGTH = 10;
     const OTP_CHANGED = [001, 'OTP changed'];
     const OTP_TIMEOUT = [002, 'OTP timeout'];
+    const VERIFIED_EMAIL = [003, 'Verified email'];
     // Common fields
     const CREATED_BY = 'created_by';
     const UPDATED_BY = 'updated_by';

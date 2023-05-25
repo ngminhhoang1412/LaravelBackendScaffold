@@ -31,13 +31,24 @@ class AuthController extends Controller
         $htmlContent = file_get_contents($htmlFilePath);
         $email = $request->get('email');
         $user = User::where('email', $email)->first();
-        $link = env('FE_URL'). '?email='. $email . '&otp='. $user->otp;
+        $link = env('FE_URL'). 'auth/confirm?email='. $email . '&otp='. $user->otp;
         $htmlContent = str_replace('{{link}}', $link, $htmlContent);
         Mail::sendMail($email, 'Socapp - Activate your account', $htmlContent);
     }
 
     public function checkExpiredTime(Request $request)
     {
+
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required',
+            ]
+        );
+
+        if ($validate->fails()) {
+            return Helper::getResponse(null, $validate->errors());
+        }
         try {
             $currentTime = new DateTime();
             $user = User::where('email', $request->get('email'))->first();
@@ -49,7 +60,7 @@ class AuthController extends Controller
                 return Helper::getResponse($expired);
             }
             else
-                return Helper::getResponse(null,'Time out', 408);
+                return Helper::getResponse(null,'Timeout');
         } catch (Throwable $th) {
             return Helper::handleApiError($th);
         }
@@ -75,6 +86,11 @@ class AuthController extends Controller
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
             $duration = $endTimeObj->getTimestamp() - $startTimeObj->getTimestamp();
+            if ($user->confirm_email)
+                return Helper::getResponse(null, [
+                    'code' => Constant::VERIFIED_EMAIL[0],
+                    'message' => Constant::VERIFIED_EMAIL[1],
+                ]);
             if ($duration > Constant::MAIL_EXPIRED_TIME) {
                 return Helper::getResponse(null, [
                     'code' => Constant::OTP_TIMEOUT[0],
@@ -119,7 +135,7 @@ class AuthController extends Controller
             );
 
             if ($validateUser->fails()) {
-                return Helper::getResponse(null, $validateUser->errors(), 401);
+                return Helper::getResponse(null, $validateUser->errors());
             }
             User::create([
                 'otp' => base64_encode(random_bytes(Constant::OTP_LENGTH)),

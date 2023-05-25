@@ -365,42 +365,6 @@
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="" style="vertical-align:top;width:600px;"><![endif]-->
-                    <div class="mj-column-per-100 mj-outlook-group-fix"
-                         style="font-size:0px;text-align:left;direction:ltr;display:inline-block;vertical-align:top;width:100%;">
-                        <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                            <tbody>
-                            <tr>
-                                <td style="vertical-align:top;padding:0;">
-                                    <table border="0" cellpadding="0" cellspacing="0" role="presentation" width="100%">
-                                        <tbody>
-                                        <tr>
-                                            <td align="center"
-                                                style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:22px;text-align:center;color:#000000;">
-                                                    <p style="margin: 10px 0;">This e-mail has been sent to
-                                                        [[EMAIL_TO]], <a href="[[UNSUB_LINK_EN]]"
-                                                                         style="color:inherit;text-decoration:none;"
-                                                                         target="_blank">click here to unsubscribe</a>.
-                                                    </p></div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td align="center"
-                                                style="font-size:0px;padding:10px 25px;word-break:break-word;">
-                                                <div
-                                                    style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:11px;line-height:22px;text-align:center;color:#000000;">
-                                                    <p style="margin: 10px 0;"> VN</p></div>
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!--[if mso | IE]></td></tr></table><![endif]--></td>
             </tr>
             </tbody>
         </table>
