@@ -86,6 +86,8 @@ class AuthController extends Controller
             $startTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $user->last_sent);
             $endTimeObj = DateTime::createFromFormat('Y-m-d H:i:s', $currentTime->format('Y-m-d H:i:s'));
             $duration = $endTimeObj->getTimestamp() - $startTimeObj->getTimestamp();
+            if (!$user)
+                return Helper::getResponse(null,'Register');
             if ($user->confirm_email)
                 return Helper::getResponse(null, [
                     'code' => Constant::VERIFIED_EMAIL[0],

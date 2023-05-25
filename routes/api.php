@@ -19,6 +19,7 @@ use App\Http\Controllers\RoleController;
 */
 
 Route::post('auth/confirm-email', [AuthController::class, 'confirmEmail']);
+Route::get('auth/send-email', [AuthController::class, 'sendRegisterMail']);
 Route::get('auth/expired-time', [AuthController::class, 'checkExpiredTime']);
 Route::post('auth/register', [AuthController::class, 'createUser']);
 Route::post('auth/login', [AuthController::class, 'loginUser']);
