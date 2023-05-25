@@ -24,7 +24,7 @@ class Role extends BaseModel
         'is_active' => 'boolean'
     ];
 
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return array_merge(
             [
@@ -36,7 +36,7 @@ class Role extends BaseModel
                     'string'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
     }
 
