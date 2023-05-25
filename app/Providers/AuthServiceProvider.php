@@ -49,5 +49,14 @@ class AuthServiceProvider extends ServiceProvider
             }
             return false;
         });
+
+        Gate::define('updateSalary', function ($user) use ($global) {
+            $user = $global->currentUser;
+            // The user need to HAVE THE ROLE in intermediate table
+            if ($user->hasPermissionTo(User::ABILITIES[4])) {
+                return true;
+            }
+            return false;
+        });
     }
 }

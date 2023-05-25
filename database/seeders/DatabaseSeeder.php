@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
 ////            PlatformSeeder::class,
 ////            TeamSeeder::class,
             RoleSeeder::class,
+            AbsenceTypeSeeder::class,
             UserSeeder::class,
         ]);
     }

@@ -6,6 +6,7 @@ use App\Common\Constant;
 use App\Mail\Mail;
 use App\Models\User;
 use App\Common\Helper;
+use App\Models\AbsenceType;
 use App\Models\Role;
 use DateTime;
 use GuzzleHttp\Exception\GuzzleException;
@@ -129,6 +130,9 @@ class AuthController extends Controller
                 'last_sent' => new DateTime()
             ]);
 
+
+            // Assign 'guest' role for new user
+
             $newUserId = DB::table(User::TABLE_NAME)->where('email', '=', $request['email'])->get('id');
             $guestRoleId = DB::table(Role::retrieveTableName())->where('name', '=', 'guest')->get('id');
 
@@ -138,6 +142,22 @@ class AuthController extends Controller
                     'model_type' => User::class,
                     'model_id' => $newUserId[0]->id
                 ]);
+
+            $absenceTypes = AbsenceType::ABSENCE_TYPES;
+            $excludedCodes = ['W', 'W/2'];
+            // Assign the default absence amount for the new user
+            DB::table(AbsenceType::retrieveTableName())
+                ->whereNotIn('code', $excludedCodes)
+                ->get()
+                ->each(function ($value) use ($newUserId, $absenceTypes) {
+                    $absenceType = $absenceTypes[$value->code];
+                    DB::table(AbsenceType::INTERMEDIATE_TABLES[0])
+                        ->insert([
+                            'user_id' => $newUserId[0]->id,
+                            'absence_type_id' => $value->id,
+                            'amount' => $absenceType['default_amount']
+                        ]);
+                });
 
             $this->sendRegisterMail($request);
 
