@@ -3,36 +3,44 @@
 namespace App\Models;
 
 use App\Common\Constant;
-use App\Common\GlobalVariable;
 use Exception;
 use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use App\Common\GlobalVariable;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Validation\Rule;
 use Mehradsadeghi\FilterQueryString\FilterQueryString;
 
 /**
  * @method static insert(array $params)
  * @method static create(array $array)
- * @method static where(string $string, mixed $email)
+ * @method static select()
+ * @method static find($id)
+ * @method static where(string $string, string $id)
  */
 class BaseModel extends Model
 {
     use HasFactory;
     use FilterQueryString;
-
     const CUSTOM_LIMIT = 10;
-
     protected $filters = [];
     protected $fillable = [];
     protected $hidden = [];
     protected $alias = [];
     protected $updatable = [];
+    /**
+     NOTE: $updatable should looks like this, either bool or anything else
+     protected $updatable = [
+        'a' => 'string',
+        'b' => 'bool',
+        'c' => 'int',
+    ];
+     */
     public $queryBy = 'id';
     public $showingRelations = [];
     protected $groupBy = [];
@@ -43,15 +51,12 @@ class BaseModel extends Model
         parent::__construct($attributes);
         $this->filters = array_merge($this->filters, ['sort']);
         $this->groupBy = array_merge($this->groupBy);
-        $this->hidden = array_merge($this->hidden, [
-            Constant::CREATED_BY,
-            Constant::UPDATED_BY,
-            Constant::CREATED_AT,
-            Constant::UPDATED_AT,
-            Constant::IS_ACTIVE
-        ]);
+        $this->hidden = $this->getHiddenField();
     }
 
+    /**
+     * @return mixed
+     */
     public static function retrieveTableName()
     {
         return with(new static)->getTable();
@@ -82,6 +87,7 @@ class BaseModel extends Model
         $model = $model->where(Constant::IS_ACTIVE, 1);
         $model = $model->filter();
         if (!$relationsCount) {
+            // DB::statement("SET SESSION sql_mode = 'STRICT_ALL_TABLES'");
             // TODO: it's a bug here, if use withCount and select together, it won't work
             $model = $model->select($this->getAliasString());
         }
@@ -93,7 +99,7 @@ class BaseModel extends Model
 
     /**
      * @param $id
-     * @return Builder|Model|object|null
+     * @return Model|object|null
      */
     public function showWithCustomFormat($id)
     {
@@ -111,7 +117,7 @@ class BaseModel extends Model
 
     /**
      * @param Request $request
-     * @return Builder|Builder[]|Collection|Model|null
+     * @return Collection|Model|null
      */
     public function storeWithCustomFormat(Request $request)
     {
@@ -128,9 +134,9 @@ class BaseModel extends Model
     /**
      * @param Request $request
      * @param $id
-     * @return null
+     * @return Model|null
      */
-    public function updateWithCustomFormat(Request $request, $id): ?Model
+    public function updateWithCustomFormat(Request $request, $id)
     {
         try {
             /** @var Model $model */
@@ -244,5 +250,20 @@ class BaseModel extends Model
             Constant::CREATED_BY => $global->currentUser->id,
             Constant::UPDATED_BY => $global->currentUser->id
         ];
+    }
+
+    /**
+     * @return array
+     */
+    protected function getHiddenField()
+    {
+        return [
+            Constant::CREATED_BY,
+            Constant::UPDATED_BY,
+            Constant::CREATED_AT,
+            Constant::UPDATED_AT,
+            Constant::IS_ACTIVE
+        ];
+
     }
 }

@@ -4,11 +4,10 @@ namespace App\Models;
 
 use App\Common\Helper;
 use App\Models\BaseModel;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role as ModelsRole;
 
@@ -28,7 +27,7 @@ class Permission extends BaseModel
 
     protected $guard = 'web';
 
-    static function getInsertValidator(Request $request): array
+    static function getStoreValidator(Request $request): array
     {
         return array_merge(
             [
@@ -40,7 +39,7 @@ class Permission extends BaseModel
                     'string'
                 ]
             ],
-            parent::getInsertValidator($request)
+            parent::getStoreValidator($request)
         );
     }
 

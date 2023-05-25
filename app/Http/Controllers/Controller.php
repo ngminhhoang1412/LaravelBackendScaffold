@@ -50,9 +50,8 @@ class Controller extends BaseController
      */
     public function show(string $id): Response
     {
-            return $this->handleShow($id);
+        return $this->handleShow($id);
     }
-
 
     /**
      * Remove the specified resource from storage.
@@ -68,6 +67,18 @@ class Controller extends BaseController
     /**
      * Show the form for creating a new resource.
      *
+     * @return Response
+     */
+    public function create(): Response
+    {
+        $request = new Request();
+        $modelValidator = call_user_func($this->model . '::getStoreValidator', $request);
+        return Helper::getResponse($modelValidator);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
      * @param Request $request
      * @return Response
      */
@@ -78,6 +89,19 @@ class Controller extends BaseController
             return $this->handleStore($request);
         };
         return $this->validateCustom($request, $modelValidator, $callback);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $request = new Request();
+        $modelValidator = call_user_func($this->model . '::getUpdateValidator', $request, $id);
+        return Helper::getResponse($modelValidator);
     }
 
     /**
