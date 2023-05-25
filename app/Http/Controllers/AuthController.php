@@ -143,15 +143,19 @@ class AuthController extends Controller
                     'model_id' => $newUserId[0]->id
                 ]);
 
+            $absenceTypes = AbsenceType::ABSENCE_TYPES;
+            $excludedCodes = ['W', 'W/2'];
             // Assign the default absence amount for the new user
             DB::table(AbsenceType::retrieveTableName())
-                ->where('id', '>', 3)
-                ->get('id')->map(function ($value) use ($newUserId) {
+                ->whereNotIn('code', $excludedCodes)
+                ->get()
+                ->each(function ($value) use ($newUserId, $absenceTypes) {
+                    $absenceType = $absenceTypes[$value->code];
                     DB::table(AbsenceType::INTERMEDIATE_TABLES[0])
                         ->insert([
                             'user_id' => $newUserId[0]->id,
                             'absence_type_id' => $value->id,
-                            'amount' => AbsenceType::DEFAULT_AMOUNT
+                            'amount' => $absenceType['default_amount']
                         ]);
                 });
 

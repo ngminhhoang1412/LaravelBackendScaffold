@@ -20,7 +20,7 @@ class AbsenceTypeSeeder extends Seeder
             DB::table(AbsenceType::retrieveTableName())
                 ->insert([
                     'code' => $key,
-                    'description' => $value
+                    'description' => $value['description']
                 ]);
         }
     }

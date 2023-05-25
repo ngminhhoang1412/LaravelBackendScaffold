@@ -36,14 +36,18 @@ class UserSeeder extends Seeder
                 'model_id' => $admin
             ]);
 
+        $absenceTypes = AbsenceType::ABSENCE_TYPES;
+        $excludedCodes = ['W', 'W/2'];
         DB::table(AbsenceType::retrieveTableName())
-            ->where('id', '>', 3)
-            ->get('id')->map(function ($value) use ($admin) {
+            ->whereNotIn('code', $excludedCodes)
+            ->get()
+            ->each(function ($value) use ($admin, $absenceTypes) {
+                $absenceType = $absenceTypes[$value->code];
                 DB::table(AbsenceType::INTERMEDIATE_TABLES[0])
                     ->insert([
                         'user_id' => $admin,
                         'absence_type_id' => $value->id,
-                        'amount' => AbsenceType::DEFAULT_AMOUNT
+                        'amount' => $absenceType['default_amount']
                     ]);
             });
     }

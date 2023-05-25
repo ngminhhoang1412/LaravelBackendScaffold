@@ -92,7 +92,11 @@ class User extends Authenticatable
         return $this->hasMany(AbsenceRequest::class);
     }
 
-    public function updateSalary(Request $request)
+    /**
+     * @param $request, $id
+     * @return Response
+     */
+    public function updateSalary(Request $request, $id)
     {
         $validator = Validator::make(
             $request->all(),
@@ -109,25 +113,24 @@ class User extends Authenticatable
         );
 
         if ($validator->fails()) {
-            return Helper::getResponse('', 'Some values was not valid!');
+            return Helper::getResponse('', $validator->errors());
         }
 
-        $user_id = $request->get('user_id');
         $salary = $request->get('salary');
         try {
             if (Gate::allows('updateSalary')) {
                 DB::table('users')
-                    ->where('id', '=', $user_id)
+                    ->where('id', '=', $id)
                     ->update([
                         'salary' => $salary
                     ]);
 
                 return Helper::getResponse(true);
             } else {
-                return Helper::getResponse('', 'Unauthorized');
+                return Helper::getResponse(null, 'Unauthorized', 401);
             }
-        } catch (\Throwable $th) {
-            return Helper::getResponse('');
+        } catch (\Exception $ex) {
+            return Helper::handleApiError($ex);
         }
     }
 }

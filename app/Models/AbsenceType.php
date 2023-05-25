@@ -23,8 +23,6 @@ class AbsenceType extends BaseModel
         'description' => 'string'
     ];
 
-    const DEFAULT_AMOUNT = 0;
-
     const INTERMEDIATE_TABLES = [
         'absence_types_user',
         'check_in',
@@ -32,14 +30,38 @@ class AbsenceType extends BaseModel
     ];
 
     const ABSENCE_TYPES = [
-        'W' => 'Working day - Ngày làm việc',
-        'W/2' => 'Working half day - Làm việc nửa ngày',
-        'AL' => 'Annual Leave - Nghỉ phép',
-        'PH' => 'Public Holiday - Nghỉ lễ',
-        'WL' => 'Wedding Leave - Nghỉ cưới',
-        'CL' => 'Compensation Leave - Nghỉ bù',
-        'UL' => 'Unpaid Leave - Nghỉ không lương',
-        'SL' => 'Sick Leave - Nghỉ ốm'
+        'W' => [
+            'description' => 'Working day - Ngày làm việc',
+            'default_amount' => 0
+        ],
+        'W/2' => [
+            'description' => 'Working half day - Làm việc nửa ngày',
+            'default_amount' => 0
+        ],
+        'AL' => [
+            'description' => 'Annual Leave - Nghỉ phép',
+            'default_amount' => 0
+        ],
+        'PH' => [
+            'description' => 'Public Holiday - Nghỉ lễ',
+            'default_amount' => 0
+        ],
+        'WL' => [
+            'description' => 'Wedding Leave - Nghỉ cưới',
+            'default_amount' => 0
+        ],
+        'CL' => [
+            'description' => 'Compensation Leave - Nghỉ bù',
+            'default_amount' => 0
+        ],
+        'UL' => [
+            'description' => 'Unpaid Leave - Nghỉ không lương',
+            'default_amount' => 0
+        ],
+        'SL' => [
+            'description' => 'Sick Leave - Nghỉ ốm',
+            'default_amount' => 0
+        ]
     ];
 
     static function getStoreValidator(Request $request): array
