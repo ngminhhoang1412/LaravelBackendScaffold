@@ -14,7 +14,7 @@ class Mail
     public static function sendMail($toMail, $subject, $htmlContent)
     {
         $url = 'https://'.Constant::MAIL_X_RAPIDAPI_HOST.'/mail/send';
-        $sender = env('MAIL_USERNAME');
+        $sender = env('SOCAPP_MAIL_ADDRESS');
         $data = array(
             "personalizations" => array(
                 array(
