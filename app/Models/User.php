@@ -2,8 +2,14 @@
 
 namespace App\Models;
 
+use App\Common\GlobalVariable;
 use App\Common\Helper;
+use Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -93,8 +99,8 @@ class User extends Authenticatable
     }
 
     /**
-     * @param $request, $id
-     * @return Response
+     * @param $request , $id
+     * @return Application|Response|ResponseFactory
      */
     public function updateSalary(Request $request, $id)
     {
@@ -130,6 +136,66 @@ class User extends Authenticatable
                 return Helper::getResponse(null, 'Unauthorized', 401);
             }
         } catch (\Exception $ex) {
+            return Helper::handleApiError($ex);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @return Application|ResponseFactory|Response
+     */
+    public function updateUser(Request $request)
+    {
+        $validation = $request->only(['name', 'avatar', 'old_password', 'new_password']);
+        $validator = Validator::make(
+            $validation,
+            [
+                'name' => [
+                    'string'
+                ],
+                'avatar' => [
+                    'string',
+                    'max:2000'
+                ],
+                'old_password' => [
+                    'required_with:new_password',
+                    'string'
+                ],
+                //Password validation rule
+                //English uppercase characters (A – Z)
+                //English lowercase characters (a – z)
+                //Base 10 digits (0 – 9)
+                //Non-alphanumeric (For example: !, $, #, or %)
+                //Unicode characters
+                'new_password' => [
+                    'required_with:old_password',
+                    'min:8',
+                    'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
+                ]
+            ]
+        );
+
+        if ($validator->fails()) {
+            return Helper::getResponse('', $validator->errors());
+        }
+        /** @var GlobalVariable $global */
+        $global = app(GlobalVariable::class);
+        $oldPassword = $request->get('old_password');
+        $newPassword = $request->get('new_password');
+        if ($oldPassword)
+            if (!Hash::check($oldPassword, $global->currentUser->password)) {
+                return Helper::getResponse('', "Old password doesn't match!");
+            }
+        $data = $request->except('old_password', 'new_password', 'password');
+        if ($newPassword)
+            $data['password'] = Hash::make($newPassword);
+        try {
+            DB::table('users')
+                ->where('id', '=', $global->currentUser->id)
+                ->update($data);
+            return Helper::getResponse(true);
+        } catch (Exception $ex) {
             return Helper::handleApiError($ex);
         }
     }

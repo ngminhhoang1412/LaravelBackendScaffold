@@ -94,10 +94,10 @@ class Controller extends BaseController
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param int $id
+     * @return Response
      */
-    public function edit($id)
+    public function edit(int $id): Response
     {
         $request = new Request();
         $modelValidator = call_user_func($this->model . '::getUpdateValidator', $request, $id);

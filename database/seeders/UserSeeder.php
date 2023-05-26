@@ -25,6 +25,7 @@ class UserSeeder extends Seeder
                 'name' => env('ADMIN_NAME'),
                 'password' => Hash::make(env('ADMIN_PASSWORD')),
                 'remember_token' => null,
+                'confirm_email' => 1,
                 'role' => array_keys(User::ROLES)[0]
             ]);
 
