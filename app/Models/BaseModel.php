@@ -172,7 +172,7 @@ class BaseModel extends Model
         if ($this->softDelete) {
             /** @var GlobalVariable $global */
             $global = app(GlobalVariable::class);
-            return $this::update([
+            return $this::where('id', $id)->update([
                 Constant::IS_ACTIVE => 0,
                 Constant::UPDATED_BY => $global->currentUser->id
             ]);
