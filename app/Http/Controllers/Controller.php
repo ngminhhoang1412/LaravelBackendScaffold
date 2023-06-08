@@ -35,7 +35,7 @@ class Controller extends BaseController
      */
     public function index(Request $request): Response
     {
-        $modelValidator = call_user_func($this->model . '::getQueryValidator');
+        $modelValidator = call_user_func($this->model . '::getQueryValidator', $request);
         $callback = function ($request) {
             return $this->handleIndex($request);
         };

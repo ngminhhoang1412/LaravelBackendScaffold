@@ -196,7 +196,7 @@ class BaseModel extends Model
     /**
      * @return array
      */
-    static function getQueryValidator(): array
+    static function getQueryValidator(Request $request): array
     {
         return [
             'limit' => [
