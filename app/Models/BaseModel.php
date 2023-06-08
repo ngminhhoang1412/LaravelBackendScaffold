@@ -45,7 +45,6 @@ class BaseModel extends Model
      */
     public $queryBy = 'id';
     public $showingRelations = [];
-    public $filterRelations = [];
     protected $groupBy = [];
     protected $softDelete = True;
 
