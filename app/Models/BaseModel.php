@@ -93,7 +93,7 @@ class BaseModel extends Model
             // TODO: it's a bug here, if use withCount and select together, it won't work
             $model = $model->select($this->getAliasString());
         }
-        $model = $this->filterByRelation($model);
+        $model = $this->filterByRelation($model, $request);
         return $model
             ->paginate($limit ?: BaseModel::CUSTOM_LIMIT)
             ->appends($request);
@@ -234,8 +234,10 @@ class BaseModel extends Model
 
     /**
      * @param $model
+     * @param Request $request
+     * @return mixed
      */
-    function filterByRelation($model)
+    function filterByRelation($model,Request $request)
     {
         return $model;
     }
